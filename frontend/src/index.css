@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-paper text-ink font-body antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display text-ink;
+  }
+  :focus-visible {
+    outline: 2px solid theme('colors.juniper.DEFAULT');
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* The signature element: every listing card reads as a physical hang-tag —
+     a punched hole in the top-right corner and a notched top edge, like a
+     price tag clipped onto an item. */
+  .tag-card {
+    position: relative;
+    clip-path: polygon(
+      0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%
+    );
+  }
+  .tag-hole {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 9px;
+    height: 9px;
+    border-radius: 9999px;
+    background: theme('colors.paper');
+    border: 1.5px solid theme('colors.ink');
+  }
+  .condition-stamp {
+    @apply font-mono text-[10px] uppercase tracking-widest px-2 py-1 border border-ink/70;
+    letter-spacing: 0.08em;
+  }
+}
