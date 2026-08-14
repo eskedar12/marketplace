@@ -25,6 +25,7 @@ const searchQuerySchema = Joi.object({
   category_id: Joi.string()
     .pattern(/^[0-9a-fA-F-]{36}(,[0-9a-fA-F-]{36})*$/)
     .optional(),
+  condition: Joi.string().valid(...CONDITIONS).optional(),
   min_price: Joi.number().min(0).optional(),
   max_price: Joi.number().min(0).optional(),
   city: Joi.string().max(100).allow('', null).optional(),

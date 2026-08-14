@@ -1,22 +1,23 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { listingsApi } from '../../api/listings.api.js';
+import { listingsApi, categoriesApi } from '../../api/listings.api.js';
 import ListingGrid from '../../components/listings/ListingGrid.jsx';
 import { CATEGORY_VISUALS } from '../../utils/categoryIcons.jsx';
-import { generateCategoryListings, hashString, PAGE_SIZE, MAX_PAGES } from '../../utils/mockListings.js';
+import { CITIES } from '../../utils/constants.js';
 import { getHeroTheme } from '../../utils/heroThemes.js';
 
-const CITIES = [
-  'Addis Ababa',
-  'Adama',
-  'Hawassa',
-  'Bahir Dar',
-  'Dire Dawa',
-  'Mekelle',
-  'Gondar',
-  'Dessie',
-  'Jimma',
-];
+const PAGE_SIZE = 12;
+
+// Small deterministic hash so the hero photo for a given category
+// stays the same across re-renders instead of changing every load.
+function hashString(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
 
 const DEFAULT_HERO_IMAGE =
   'https://images.unsplash.com/photo-1686143293611-85158a1a9370?auto=format&fit=crop&w=1740&q=80';
@@ -86,47 +87,72 @@ export default function Home() {
       .finally(() => setRecentLoading(false));
   }, []);
 
-  // ---- Category browsing (mock data, in-place — no navigation away
-  // from Home) ---------------------------------------------------
+  // ---- Category browsing (real listings from the API, in-place —
+  // no navigation away from Home) ---------------------------------
   const [searchParams, setSearchParams] = useSearchParams();
   const categorySlug = searchParams.get('category');
   const activeCategory = categorySlug
     ? CATEGORY_VISUALS.find((c) => c.dbSlug === categorySlug)
     : null;
 
-  // Full 9-page pool for the selected category, generated once per
-  // category (stable — doesn't reshuffle on re-render).
-  const categoryPool = useMemo(
-    () => (activeCategory ? generateCategoryListings(activeCategory.dbSlug) : []),
-    [activeCategory]
-  );
-
-  const [categoryPage, setCategoryPage] = useState(1);
+  // categoryIds resolves the slug to every category_id whose listings
+  // belong here (the category itself, plus subcategories if any exist).
+  const [categoryIds, setCategoryIds] = useState(null);
   useEffect(() => {
+    if (!activeCategory) {
+      setCategoryIds(null);
+      return;
+    }
+    categoriesApi
+      .getBySlug(activeCategory.dbSlug)
+      .then((res) => setCategoryIds(res.data.categoryIds))
+      .catch(() => setCategoryIds([]));
+  }, [activeCategory]);
+
+  const [categoryItems, setCategoryItems] = useState([]);
+  const [categoryPage, setCategoryPage] = useState(1);
+  const [categoryTotal, setCategoryTotal] = useState(0);
+  const [categoryLoading, setCategoryLoading] = useState(false);
+
+  useEffect(() => {
+    setCategoryItems([]);
     setCategoryPage(1);
+    setCategoryTotal(0);
   }, [categorySlug]);
 
-  const categoryItems = categoryPool.slice(0, categoryPage * PAGE_SIZE);
-  const hasMoreCategoryItems = categoryPage < MAX_PAGES;
+  useEffect(() => {
+    if (!activeCategory || categoryIds === null) return;
+    setCategoryLoading(true);
+    listingsApi
+      .search({ category_id: categoryIds.join(','), page: categoryPage, limit: PAGE_SIZE })
+      .then((res) => {
+        setCategoryItems((prev) => (categoryPage === 1 ? res.data.items : [...prev, ...res.data.items]));
+        setCategoryTotal(res.data.total ?? 0);
+      })
+      .catch(() => {})
+      .finally(() => setCategoryLoading(false));
+  }, [activeCategory, categoryIds, categoryPage]);
+
+  const hasMoreCategoryItems = categoryItems.length < categoryTotal;
 
   // Infinite scroll: bump the page once the sentinel below the grid
   // scrolls into view.
   const sentinelRef = useRef(null);
   useEffect(() => {
-    if (!activeCategory || !hasMoreCategoryItems) return;
+    if (!activeCategory || !hasMoreCategoryItems || categoryLoading) return;
     const el = sentinelRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          setCategoryPage((p) => Math.min(p + 1, MAX_PAGES));
+          setCategoryPage((p) => p + 1);
         }
       },
       { rootMargin: '300px' }
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [activeCategory, hasMoreCategoryItems]);
+  }, [activeCategory, hasMoreCategoryItems, categoryLoading]);
 
   // Bring the listings section into view when a category is chosen
   // from the navbar, so it's obvious something changed.
@@ -147,7 +173,7 @@ export default function Home() {
   // category so each category "feels" like its own page. ----------
   const heroTheme = getHeroTheme(activeCategory?.dbSlug);
   const heroImageUrl = activeCategory
-    ? `https://loremflickr.com/1600/900/${heroTheme.keyword}?lock=${Math.abs(hashString(activeCategory.dbSlug))}`
+    ? `https://loremflickr.com/1600/900/${heroTheme.keyword}?lock=${hashString(activeCategory.dbSlug)}`
     : DEFAULT_HERO_IMAGE;
 
   function handleSearchSubmit(e) {
@@ -188,7 +214,20 @@ export default function Home() {
             onSubmit={handleSearchSubmit}
             className="max-w-2xl mx-auto bg-white p-2 rounded-2xl md:rounded-full shadow-2xl flex flex-col md:flex-row items-stretch gap-2 mt-10"
           >
-            <div className="flex items-center gap-2 px-4 py-2.5 md:py-0 border-b md:border-b-0 md:border-r border-line flex-shrink-0">
+            <div className="flex-1 flex items-center gap-2 px-4 py-2.5 md:py-0 border-b md:border-b-0 md:border-r border-line">
+              <svg className="w-[18px] h-[18px] text-ink/30 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search for anything..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="w-full bg-transparent text-sm text-ink font-body focus:outline-none placeholder-ink/40"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 px-4 py-2.5 md:py-0 flex-shrink-0">
               <svg className="w-[18px] h-[18px] text-ink/40 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.66 16.66L13.4 20.9a2 2 0 01-2.83 0l-4.24-4.24a8 8 0 1111.31 0z" />
                 <circle cx="12" cy="11" r="3" />
@@ -203,19 +242,6 @@ export default function Home() {
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
-            </div>
-
-            <div className="flex-1 flex items-center gap-2 px-4 py-2.5 md:py-0">
-              <svg className="w-[18px] h-[18px] text-ink/30 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Search for anything..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full bg-transparent text-sm text-ink font-body focus:outline-none placeholder-ink/40"
-              />
             </div>
 
             <button
@@ -311,28 +337,57 @@ export default function Home() {
 
       {/* 5. CTA banner */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
-        <div className="rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 px-6 sm:px-10 py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
-            <span className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-3xl flex-shrink-0">
-              📦
-            </span>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-6">
+          {/* Photo — a real box of items, filling the left edge of the banner.
+              Fixed Unsplash photo (not a keyword-matched service) so the
+              same, on-theme image shows every time instead of whatever a
+              loose keyword search happens to return. */}
+          <img
+            src="https://images.unsplash.com/photo-1647489238347-dbd651c2f37a?auto=format&fit=crop&w=500&h=400&q=80"
+            alt="A box of items ready to be given a new home"
+            className="w-full sm:w-56 md:w-64 h-40 sm:h-full object-cover flex-shrink-0"
+          />
+
+          <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 px-6 sm:px-0 sm:pr-10 pb-8 sm:pb-0 sm:py-10">
             <div>
               <p className="font-display font-extrabold text-lg sm:text-xl text-ink">
                 Have something you don't need anymore?
               </p>
               <p className="font-display font-extrabold text-lg sm:text-xl text-mustard">Give it a new home.</p>
             </div>
+
+            <Link
+              to="/sell"
+              className="flex items-center gap-1.5 bg-mustard hover:bg-mustard-dark text-white font-display font-bold text-sm px-6 py-3 rounded-xl transition-colors flex-shrink-0"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              Sell an Item
+            </Link>
           </div>
 
-          <Link
-            to="/sell"
-            className="flex items-center gap-1.5 bg-mustard hover:bg-mustard-dark text-white font-display font-bold text-sm px-6 py-3 rounded-xl transition-colors flex-shrink-0"
+          {/* Decorative diamond pattern in the bottom-right corner, echoing traditional Ethiopian textile motifs */}
+          <svg
+            className="hidden sm:block absolute right-0 bottom-0 w-40 h-40 text-orange-900/10 pointer-events-none"
+            viewBox="0 0 160 160"
+            fill="none"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            Sell an Item
-          </Link>
+            {Array.from({ length: 5 }).map((_, row) =>
+              Array.from({ length: 5 }).map((_, col) => (
+                <rect
+                  key={`${row}-${col}`}
+                  x={col * 32 - 16}
+                  y={row * 32 - 16}
+                  width="22"
+                  height="22"
+                  transform={`rotate(45 ${col * 32 - 5} ${row * 32 - 5})`}
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+              ))
+            )}
+          </svg>
         </div>
       </section>
     </div>

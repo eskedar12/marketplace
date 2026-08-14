@@ -58,20 +58,6 @@ export const CATEGORY_VISUALS = [
     ),
   },
   {
-    name: 'Home Appliances',
-    dbSlug: 'household-appliances',
-    bg: 'bg-sky-50',
-    fg: 'text-sky-600',
-    icon: (className) => (
-      <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <rect x="6" y="2" width="12" height="20" rx="2" />
-        <line x1="6" y1="12" x2="18" y2="12" />
-        <circle cx="10" cy="7" r="0.8" fill="currentColor" stroke="none" />
-        <circle cx="10" cy="17" r="2.2" />
-      </svg>
-    ),
-  },
-  {
     name: 'Books & Education',
     dbSlug: 'books',
     bg: 'bg-blue-50',

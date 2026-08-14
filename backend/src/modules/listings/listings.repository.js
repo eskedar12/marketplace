@@ -42,7 +42,7 @@ async function findById(id) {
 // Uses the generated `search_vector` column (see schema.sql) which is
 // already backed by a GIN index, so free-text search stays fast as the
 // table grows — no on-the-fly to_tsvector() call needed here.
-async function search({ q, category_id, min_price, max_price, city, neighborhood, page, limit }) {
+async function search({ q, category_id, condition, min_price, max_price, city, neighborhood, page, limit }) {
   const conditions = ["l.status = 'active'"];
   const values = [];
   let i = 1;
@@ -50,6 +50,10 @@ async function search({ q, category_id, min_price, max_price, city, neighborhood
   if (q) {
     conditions.push(`l.search_vector @@ plainto_tsquery('english', $${i++})`);
     values.push(q);
+  }
+  if (condition) {
+    conditions.push(`l.condition = $${i++}`);
+    values.push(condition);
   }
   if (category_id) {
     // A category browse page passes the parent id plus all of its

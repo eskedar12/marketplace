@@ -1,7 +1,7 @@
 export const CONDITIONS = [
   { value: 'brand_new', label: 'Brand new' },
   { value: 'lightly_used', label: 'Lightly used' },
-  { value: 'fair_condition', label: 'Fair condition' },
+  { value: 'fair_condition', label: 'Used' },
 ];
 
 export function conditionLabel(value) {

@@ -26,16 +26,47 @@ export function Textarea({ label, hint, error, className = '', ...props }) {
 }
 
 export function Select({ label, options, placeholder = 'Select…', className = '', ...props }) {
+  // Options can optionally carry a `group` field (e.g. a subcategory
+  // tagged with its parent category's name) — when any option has one,
+  // render real <optgroup> sections instead of a flat list, so a
+  // 2-level category tree stays readable as a single <select>.
+  const hasGroups = options.some((opt) => opt.group);
+  const groups = hasGroups
+    ? options.reduce((acc, opt) => {
+        const key = opt.group || '';
+        (acc[key] = acc[key] || []).push(opt);
+        return acc;
+      }, {})
+    : null;
+
   return (
     <div>
       {label && <label className="block text-sm font-body text-ink/70 mb-1">{label}</label>}
       <select className={`${fieldClass} ${className}`} {...props}>
         <option value="">{placeholder}</option>
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
+        {hasGroups
+          ? Object.entries(groups).map(([group, opts]) =>
+              group ? (
+                <optgroup key={group} label={group}>
+                  {opts.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </optgroup>
+              ) : (
+                opts.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))
+              )
+            )
+          : options.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
       </select>
     </div>
   );

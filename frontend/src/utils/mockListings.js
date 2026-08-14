@@ -8,7 +8,7 @@
 export const PAGE_SIZE = 12;
 export const MAX_PAGES = 9;
 
-const CITIES = [
+export const CITIES = [
   'Addis Ababa',
   'Adama',
   'Hawassa',

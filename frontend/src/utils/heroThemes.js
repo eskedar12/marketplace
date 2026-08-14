@@ -6,7 +6,7 @@
 // remount).
 //
 // `keyword` feeds the placeholder photo service used elsewhere in
-// mockListings.js. Keywords are picked to be single, unambiguous,
+// constants.js & the real listings API. Keywords are picked to be single, unambiguous,
 // highly-photographed objects (a phone, a sofa, a car...) so the
 // hero clearly reads as "this category" at a glance rather than a
 // vague, on-theme-but-abstract shot.

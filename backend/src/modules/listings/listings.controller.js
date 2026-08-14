@@ -8,7 +8,13 @@ const create = asyncHandler(async (req, res) => {
 
 const getAll = asyncHandler(async (req, res) => {
   const result = await listingsService.searchListings(req.query);
-  res.json({ success: true, ...result });
+  // { items, total } — nested under data to match the rest of the API
+  // (getOne/update/getMine all do this) and what axiosClient's response
+  // interceptor + useListings expect (res.data.items / res.data.total).
+  // Previously this spread {items, total} onto the top level instead,
+  // which is what caused "Cannot read properties of undefined (reading
+  // 'items')" on the frontend.
+  res.json({ success: true, data: result });
 });
 
 const getOne = asyncHandler(async (req, res) => {
