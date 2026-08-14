@@ -23,6 +23,16 @@ export default {
         body: ['"IBM Plex Sans"', 'sans-serif'],
         mono: ['"IBM Plex Mono"', 'monospace'],
       },
+      // Lets the codebase use font-400 / font-500 / font-600 / font-700
+      // alongside the standard font-bold / font-semibold utilities —
+      // several components already relied on the numeric classes.
+      fontWeight: {
+        400: '400',
+        500: '500',
+        600: '600',
+        700: '700',
+        800: '800',
+      },
     },
   },
   plugins: [],

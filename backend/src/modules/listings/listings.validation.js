@@ -20,7 +20,11 @@ const updateListingSchema = createListingSchema.fork(
 
 const searchQuerySchema = Joi.object({
   q: Joi.string().max(150).allow('').optional(),
-  category_id: Joi.string().uuid().optional(),
+  // Plain UUID for a single category, or a comma-separated list of UUIDs
+  // (used by the category browse page to include subcategory listings).
+  category_id: Joi.string()
+    .pattern(/^[0-9a-fA-F-]{36}(,[0-9a-fA-F-]{36})*$/)
+    .optional(),
   min_price: Joi.number().min(0).optional(),
   max_price: Joi.number().min(0).optional(),
   city: Joi.string().max(100).allow('', null).optional(),

@@ -10,7 +10,8 @@ const CLOSE_DELAY = 150;
  * Carousell's nav. Categories + subcategories come straight from
  * GET /api/categories (already returned as a 2-level tree by the
  * backend), so this stays in sync with whatever is in the `categories`
- * table — no hardcoded list to maintain.
+ * table — no hardcoded list to maintain. Every item links to its own
+ * /category/:slug browse page (see pages/Category/index.jsx).
  */
 export default function CategoryNav() {
   const [categories, setCategories] = useState([]);
@@ -76,7 +77,7 @@ export default function CategoryNav() {
                 onMouseEnter={() => hasSubs && openNow(cat.slug)}
               >
                 <Link
-                  to={`/?category=${cat.slug}`}
+                  to={`/category/${cat.slug}`}
                   onClick={(e) => {
                     if (hasSubs) {
                       // First tap/click opens the dropdown (mirrors
@@ -106,7 +107,7 @@ export default function CategoryNav() {
                     {cat.subcategories.map((sub) => (
                       <Link
                         key={sub.id}
-                        to={`/?category=${sub.slug}`}
+                        to={`/category/${sub.slug}`}
                         role="menuitem"
                         onClick={() => setOpenSlug(null)}
                         className="block px-5 py-3 text-sm font-body text-white/80 hover:text-mustard transition-colors"

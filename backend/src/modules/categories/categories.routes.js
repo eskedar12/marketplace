@@ -5,5 +5,6 @@ const router = express.Router();
 
 // Public — needed to populate filter dropdowns before a user logs in
 router.get('/', controller.getAll);
+router.get('/:slug', controller.getBySlug);
 
 module.exports = router;

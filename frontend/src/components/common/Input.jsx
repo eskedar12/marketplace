@@ -1,7 +1,7 @@
 import React from 'react';
 
 const fieldClass =
-  'w-full border border-line px-3 py-2 text-sm focus:outline-none focus:border-juniper bg-white';
+  'w-full border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-mustard focus:ring-1 focus:ring-mustard/30 bg-white transition-colors';
 
 export function Input({ label, hint, error, className = '', ...props }) {
   return (

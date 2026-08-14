@@ -81,11 +81,11 @@ export default function ListingDetail() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 md:grid-cols-5 gap-8">
       <div className="md:col-span-3">
-        <div className="aspect-[4/3] bg-line/40 border border-line overflow-hidden">
+        <div className="aspect-[4/3] bg-paper border border-line rounded-2xl overflow-hidden">
           {images.length ? (
             <img src={images[activeImage]?.image_url} alt={listing.title} className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-ink/30 font-mono text-xs uppercase tracking-widest">
+            <div className="w-full h-full flex items-center justify-center text-ink/30 font-body text-xs uppercase tracking-widest">
               No photo
             </div>
           )}
@@ -96,7 +96,7 @@ export default function ListingDetail() {
               <button
                 key={i}
                 onClick={() => setActiveImage(i)}
-                className={`w-16 h-16 border ${i === activeImage ? 'border-juniper' : 'border-line'} overflow-hidden`}
+                className={`w-16 h-16 rounded-lg border-2 overflow-hidden transition-colors ${i === activeImage ? 'border-mustard' : 'border-line'}`}
               >
                 <img src={img.image_url} alt="" className="w-full h-full object-cover" />
               </button>
@@ -107,9 +107,11 @@ export default function ListingDetail() {
 
       <div className="md:col-span-2 space-y-5">
         <div>
-          <span className="condition-stamp text-ink/70">{conditionLabel(listing.condition)}</span>
-          <h1 className="text-2xl font-700 mt-2 leading-snug">{listing.title}</h1>
-          <p className="font-mono font-600 text-2xl text-juniper-dark mt-2">{formatPrice(listing.price)}</p>
+          <span className="inline-block text-[11px] font-medium px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700">
+            {conditionLabel(listing.condition)}
+          </span>
+          <h1 className="text-2xl font-700 mt-2 leading-snug font-display text-ink">{listing.title}</h1>
+          <p className="font-display font-bold text-2xl text-mustard mt-2">{formatPrice(listing.price)}</p>
           <p className="text-sm text-ink/50 font-body mt-1">
             {listing.neighborhood ? `${listing.neighborhood}, ` : ''}
             {listing.city} · Posted {timeAgo(listing.created_at)}
@@ -119,11 +121,11 @@ export default function ListingDetail() {
         <p className="text-sm font-body text-ink/80 whitespace-pre-line">{listing.description}</p>
 
         {!isOwnListing && (
-          <div className="border border-line p-4 space-y-3 bg-white">
+          <div className="border border-line rounded-2xl p-4 space-y-3 bg-white">
             <p className="font-display font-600 text-sm">Contact the seller</p>
             <div className="flex flex-wrap gap-2">
               {listing.seller_phone && (
-                <Button as="a" href={`tel:${listing.seller_phone}`} className="flex-1 text-center">
+                <Button as="a" href={`tel:${listing.seller_phone}`} className="flex-1 text-center rounded-xl">
                   Call
                 </Button>
               )}
@@ -134,7 +136,7 @@ export default function ListingDetail() {
                   target="_blank"
                   rel="noreferrer"
                   variant="outline"
-                  className="flex-1 text-center"
+                  className="flex-1 text-center rounded-xl"
                 >
                   Telegram
                 </Button>
@@ -143,19 +145,32 @@ export default function ListingDetail() {
                 variant="accent"
                 onClick={startConversation}
                 disabled={contacting}
-                className="flex-1 text-center"
+                className="flex-1 text-center rounded-xl"
               >
-                {contacting ? 'Opening…' : 'Message on Zego'}
+                {contacting ? 'Opening…' : 'Message on ReGebeya'}
               </Button>
             </div>
-            <button onClick={toggleFavorite} className="text-sm font-body text-ink/60 hover:text-juniper">
-              {favorited ? '★ Saved' : '☆ Save for later'}
+            <button onClick={toggleFavorite} className="flex items-center gap-1.5 text-sm font-body text-ink/60 hover:text-mustard transition-colors">
+              <svg
+                className={`w-4 h-4 ${favorited ? 'text-clay' : 'text-ink/40'}`}
+                fill={favorited ? 'currentColor' : 'none'}
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 20.5s-7-4.35-9.5-8.5C.9 8.5 2.5 5 6 5c2 0 3.3 1.1 4 2.1C10.7 6.1 12 5 14 5c3.5 0 5.1 3.5 3.5 7-2.5 4.15-9.5 8.5-9.5 8.5z"
+                />
+              </svg>
+              {favorited ? 'Saved' : 'Save for later'}
             </button>
           </div>
         )}
 
         {isOwnListing && (
-          <Button as={Link} to={`/listings/${listing.id}/edit`} variant="outline">
+          <Button as={Link} to={`/listings/${listing.id}/edit`} variant="outline" className="rounded-xl">
             Edit this listing
           </Button>
         )}

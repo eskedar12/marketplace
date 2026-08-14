@@ -16,6 +16,11 @@ export const listingsApi = {
 
 export const categoriesApi = {
   getAll: () => axiosClient.get('/categories'),
+  // Powers the category browse page — returns the category, its
+  // parent (for a breadcrumb), its subcategories (for pill filters),
+  // and categoryIds (this category + all its subcategory ids) to
+  // pass straight into listingsApi.search({ category_id: ... }).
+  getBySlug: (slug) => axiosClient.get(`/categories/${slug}`),
 };
 
 export const favoritesApi = {

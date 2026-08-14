@@ -3,6 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute.jsx';
 
 import Home from '../pages/Home/index.jsx';
+import Listings from '../pages/Listings/index.jsx';
+import CategoryPage from '../pages/Category/index.jsx';
 import Login from '../pages/Auth/Login.jsx';
 import Register from '../pages/Auth/Register.jsx';
 import ListingDetail from '../pages/ListingDetail/index.jsx';
@@ -22,6 +24,8 @@ export default function AppRouter() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/listings" element={<Listings />} />
+      <Route path="/category/:slug" element={<CategoryPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/listings/:id" element={<ListingDetail />} />

@@ -52,8 +52,20 @@ async function search({ q, category_id, min_price, max_price, city, neighborhood
     values.push(q);
   }
   if (category_id) {
-    conditions.push(`l.category_id = $${i++}`);
-    values.push(category_id);
+    // A category browse page passes the parent id plus all of its
+    // subcategory ids (comma-separated) so listings tagged directly
+    // under a subcategory still show up on the parent's page.
+    const ids = Array.isArray(category_id)
+      ? category_id
+      : String(category_id).split(',').filter(Boolean);
+
+    if (ids.length === 1) {
+      conditions.push(`l.category_id = $${i++}`);
+      values.push(ids[0]);
+    } else if (ids.length > 1) {
+      conditions.push(`l.category_id = ANY($${i++}::uuid[])`);
+      values.push(ids);
+    }
   }
   if (min_price !== undefined) {
     conditions.push(`l.price >= $${i++}`);
