@@ -1,13 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { CATEGORY_VISUALS } from '../../utils/categoryIcons.jsx';
 
-const CATEGORY_LINKS = [
-  { name: 'Electronics', slug: 'electronics' },
-  { name: 'Furniture & Home', slug: 'furniture' },
-  { name: 'Fashion', slug: 'apparel' },
-  { name: 'Vehicles', slug: 'vehicles' },
-  { name: 'Home Appliances', slug: 'household-appliances' },
-];
+// Pulled from the same source of truth as the navbar's Categories
+// dropdown, so the footer never lists a category slug that doesn't
+// actually exist in the database (e.g. the old "Home Appliances" /
+// household-appliances category, which was merged into Furniture &
+// Home and no longer exists).
+const CATEGORY_LINKS = CATEGORY_VISUALS.slice(0, 5).map((c) => ({
+  name: c.name,
+  slug: c.dbSlug,
+}));
 
 const HELP_LINKS = ['Help Center', 'How to Buy', 'How to Sell', 'Payment & Safety', 'Contact Support'];
 const SAFETY_LINKS = ['Meet in Safe Places', 'Check Before You Buy', 'Avoid Scams', 'Report Fraud', 'Safety Center'];

@@ -9,7 +9,7 @@ async function findByEmail(email) {
 
 async function findById(id) {
   const { rows } = await query(
-    `SELECT id, name, email, phone, city, neighborhood, profile_image,
+    `SELECT id, name, email, phone, city, neighborhood, profile_image, role,
             is_verified, rating_avg, rating_count, created_at, updated_at
      FROM users WHERE id = $1`,
     [id]
@@ -17,12 +17,12 @@ async function findById(id) {
   return rows[0] || null;
 }
 
-async function createUser({ name, email, password_hash, phone, city, neighborhood }) {
+async function createUser({ name, email, password_hash, phone, city, neighborhood, role }) {
   const { rows } = await query(
-    `INSERT INTO users (name, email, password_hash, phone, city, neighborhood)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING id, name, email, phone, city, neighborhood, is_verified, created_at`,
-    [name, email, password_hash, phone, city, neighborhood || null]
+    `INSERT INTO users (name, email, password_hash, phone, city, neighborhood, role)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     RETURNING id, name, email, phone, city, neighborhood, role, is_verified, created_at`,
+    [name, email, password_hash, phone, city, neighborhood || null, role]
   );
   return rows[0];
 }

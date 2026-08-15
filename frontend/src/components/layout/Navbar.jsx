@@ -8,6 +8,21 @@ import Button from '../common/Button.jsx';
 // "Categories" dropdown, matching the reference design.
 const QUICK_LINKS = ['Electronics', 'Fashion', 'Vehicles'];
 
+// A single icon-only nav link used for the role-specific controls on the
+// right side of the navbar (Favorites/My Listings, Notifications, Profile).
+function NavIconLink({ to, label, children }) {
+  return (
+    <Link
+      to={to}
+      title={label}
+      aria-label={label}
+      className="p-2 text-ink/70 hover:text-mustard hover:bg-mustard/5 rounded-lg transition-colors"
+    >
+      {children}
+    </Link>
+  );
+}
+
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -27,9 +42,35 @@ export default function Navbar() {
     <header className="bg-white sticky top-0 z-30 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
-        <Link to="/" className="flex items-center font-display font-extrabold text-2xl tracking-tight flex-shrink-0">
-          <span className="text-mustard">Re</span>
-          <span className="text-ink">Gebeya</span>
+        <Link to="/" className="flex items-center gap-2 font-display font-extrabold text-2xl tracking-tight flex-shrink-0">
+          <svg
+            className="w-8 h-8 flex-shrink-0"
+            viewBox="0 0 32 32"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="32" height="32" rx="9" className="fill-mustard" />
+            <path
+              d="M6.5 13.5Q9.2 9.5 12 13.5Q14.8 9.5 17.5 13.5Q20.2 9.5 22 12.5"
+              stroke="white"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M8 13.5V21Q8 22 9 22H23Q24 22 24 21V13.5"
+              stroke="white"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <line x1="13.5" y1="17" x2="13.5" y2="22" stroke="white" strokeWidth="1.4" strokeLinecap="round" />
+            <line x1="18.5" y1="17" x2="18.5" y2="22" stroke="white" strokeWidth="1.4" strokeLinecap="round" />
+          </svg>
+          <span>
+            <span className="text-mustard">Re</span>
+            <span className="text-ink">Gebeya</span>
+          </span>
         </Link>
 
         {/* Center nav: Categories dropdown + quick links */}
@@ -93,15 +134,33 @@ export default function Navbar() {
         <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
           {user ? (
             <>
-              <Link to="/messages" className="hidden sm:inline px-2 py-2 text-sm font-body text-ink/80 hover:text-mustard font-medium transition-colors">
-                Messages
-              </Link>
-              <Link to="/my-listings" className="hidden sm:inline px-2 py-2 text-sm font-body text-ink/80 hover:text-mustard font-medium transition-colors">
-                My listings
-              </Link>
-              <Link to="/profile" className="hidden sm:inline px-2 py-2 text-sm font-body text-ink/80 hover:text-mustard font-medium transition-colors">
-                Profile
-              </Link>
+              {/* Role-specific icon: Favorites for buyers, My Listings for sellers */}
+              {user.role === 'seller' ? (
+                <NavIconLink to="/my-listings" label="My Listings">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                  </svg>
+                </NavIconLink>
+              ) : (
+                <NavIconLink to="/favorites" label="Favorites">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                  </svg>
+                </NavIconLink>
+              )}
+
+              <NavIconLink to="/notifications" label="Notifications">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                </svg>
+              </NavIconLink>
+
+              <NavIconLink to="/profile" label="Profile">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+              </NavIconLink>
+
               <button
                 onClick={() => {
                   logout();
@@ -123,17 +182,19 @@ export default function Navbar() {
             </>
           )}
 
-          <Button
-            as={Link}
-            to="/sell"
-            variant="accent"
-            className="flex items-center gap-1.5 px-5 py-2.5 shadow-sm hover:shadow-md transition-all text-white font-display font-bold tracking-wide rounded-xl text-xs uppercase"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            Sell
-          </Button>
+          {(!user || user.role === 'seller') && (
+            <Button
+              as={Link}
+              to="/sell"
+              variant="accent"
+              className="flex items-center gap-1.5 px-5 py-2.5 shadow-sm hover:shadow-md transition-all text-white font-display font-bold tracking-wide rounded-xl text-xs uppercase"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              Sell
+            </Button>
+          )}
         </div>
       </div>
     </header>

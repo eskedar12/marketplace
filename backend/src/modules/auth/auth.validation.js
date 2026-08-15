@@ -7,6 +7,7 @@ const registerSchema = Joi.object({
   phone: Joi.string().max(20).required(),
   city: Joi.string().max(100).required(),
   neighborhood: Joi.string().max(100).allow('', null).optional(),
+  role: Joi.string().valid('buyer', 'seller').required(),
 });
 
 const loginSchema = Joi.object({

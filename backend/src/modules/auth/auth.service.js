@@ -12,7 +12,7 @@ function signToken(user) {
   });
 }
 
-async function register({ name, email, password, phone, city, neighborhood }) {
+async function register({ name, email, password, phone, city, neighborhood, role }) {
   const existing = await usersRepository.findByEmail(email);
   if (existing) {
     throw ApiError.conflict('An account with this email already exists');
@@ -26,6 +26,7 @@ async function register({ name, email, password, phone, city, neighborhood }) {
     phone,
     city,
     neighborhood,
+    role,
   });
 
   const token = signToken(user);

@@ -14,6 +14,8 @@ import Inbox from '../pages/Chat/Inbox.jsx';
 import Thread from '../pages/Chat/Thread.jsx';
 import Profile from '../pages/Profile/index.jsx';
 import PublicProfile from '../pages/Profile/PublicProfile.jsx';
+import Favorites from '../pages/Favorites/Favorites.jsx';
+import Notifications from '../pages/Notifications/Notifications.jsx';
 
 // MyListings doesn't have its own top-level folder in the requested
 // structure — it's seller-account content, so it lives alongside the
@@ -60,6 +62,22 @@ export default function AppRouter() {
         element={
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/favorites"
+        element={
+          <ProtectedRoute>
+            <Favorites />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/notifications"
+        element={
+          <ProtectedRoute>
+            <Notifications />
           </ProtectedRoute>
         }
       />

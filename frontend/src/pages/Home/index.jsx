@@ -20,7 +20,7 @@ function hashString(str) {
 }
 
 const DEFAULT_HERO_IMAGE =
-  'https://images.unsplash.com/photo-1686143293611-85158a1a9370?auto=format&fit=crop&w=1740&q=80';
+  'https://images.unsplash.com/photo-1760625345932-448b852afdf9?auto=format&fit=crop&w=1740&q=80';
 
 const WHY_REGEBEYA = [
   {
@@ -256,23 +256,32 @@ export default function Home() {
 
       {/* 2. Browse by Category */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
-        <h2 className="font-display font-extrabold text-2xl text-ink mb-8">Browse by Category</h2>
+        <h2 className="font-display font-extrabold text-2xl text-ink mb-8 text-center">Browse by Category</h2>
 
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-          {CATEGORY_VISUALS.map((cat) => (
-            <Link
-              key={cat.name}
-              to={`/?category=${cat.dbSlug}`}
-              className={`flex flex-col items-center text-center gap-2.5 p-4 rounded-2xl border bg-white hover:shadow-md hover:-translate-y-0.5 transition-all ${
-                categorySlug === cat.dbSlug ? 'border-mustard ring-1 ring-mustard' : 'border-line'
-              }`}
-            >
-              <span className={`w-14 h-14 rounded-full flex items-center justify-center ${cat.bg} ${cat.fg}`}>
-                {cat.icon('w-6 h-6')}
-              </span>
-              <span className="font-body font-medium text-sm text-ink leading-tight">{cat.name}</span>
-            </Link>
-          ))}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
+          {CATEGORY_VISUALS.map((cat) => {
+            const keyword = cat.dbSlug === 'books' ? 'books,bookstack' : getHeroTheme(cat.dbSlug).keyword;
+            return (
+              <Link
+                key={cat.name}
+                to={`/?category=${cat.dbSlug}`}
+                className={`flex flex-col overflow-hidden rounded-2xl border bg-white hover:shadow-md hover:-translate-y-0.5 transition-all ${
+                  categorySlug === cat.dbSlug ? 'border-mustard ring-1 ring-mustard' : 'border-line'
+                }`}
+              >
+                <div className={`w-full aspect-square ${cat.bg}`}>
+                  <img
+                    src={`https://loremflickr.com/400/400/${keyword}?lock=${hashString(cat.dbSlug)}`}
+                    alt={cat.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <span className="font-body font-medium text-base text-ink leading-tight text-center py-4 px-2">
+                  {cat.name}
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
@@ -337,28 +346,30 @@ export default function Home() {
 
       {/* 5. CTA banner */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-6">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 flex items-center h-32 sm:h-40">
           {/* Photo — a real box of items, filling the left edge of the banner.
               Fixed Unsplash photo (not a keyword-matched service) so the
               same, on-theme image shows every time instead of whatever a
               loose keyword search happens to return. */}
           <img
-            src="https://images.unsplash.com/photo-1647489238347-dbd651c2f37a?auto=format&fit=crop&w=500&h=400&q=80"
+            src="https://images.unsplash.com/photo-1647489238347-dbd651c2f37a?auto=format&fit=crop&w=600&h=250&q=80"
             alt="A box of items ready to be given a new home"
-            className="w-full sm:w-56 md:w-64 h-40 sm:h-full object-cover flex-shrink-0"
+            className="w-32 sm:w-56 md:w-72 h-full object-cover object-center flex-shrink-0"
           />
 
-          <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 px-6 sm:px-0 sm:pr-10 pb-8 sm:pb-0 sm:py-10">
+          <div className="flex-1 flex items-center justify-between gap-4 sm:gap-6 px-4 sm:px-8 h-full relative z-10">
             <div>
-              <p className="font-display font-extrabold text-lg sm:text-xl text-ink">
+              <p className="font-display font-extrabold text-base sm:text-2xl text-ink leading-snug">
                 Have something you don't need anymore?
               </p>
-              <p className="font-display font-extrabold text-lg sm:text-xl text-mustard">Give it a new home.</p>
+              <p className="font-display font-extrabold text-base sm:text-2xl text-mustard leading-snug">
+                Give it a new home.
+              </p>
             </div>
 
             <Link
               to="/sell"
-              className="flex items-center gap-1.5 bg-mustard hover:bg-mustard-dark text-white font-display font-bold text-sm px-6 py-3 rounded-xl transition-colors flex-shrink-0"
+              className="hidden sm:flex items-center gap-1.5 bg-mustard hover:bg-mustard-dark text-white font-display font-bold text-sm px-7 py-3.5 rounded-full transition-colors flex-shrink-0"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -367,14 +378,15 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* Decorative diamond pattern in the bottom-right corner, echoing traditional Ethiopian textile motifs */}
+          {/* Decorative diamond pattern spanning the right side, echoing traditional Ethiopian textile motifs */}
           <svg
-            className="hidden sm:block absolute right-0 bottom-0 w-40 h-40 text-orange-900/10 pointer-events-none"
-            viewBox="0 0 160 160"
+            className="hidden sm:block absolute right-0 top-0 h-full w-56 text-orange-900/10 pointer-events-none"
+            viewBox="0 0 220 160"
+            preserveAspectRatio="xMaxYMid slice"
             fill="none"
           >
             {Array.from({ length: 5 }).map((_, row) =>
-              Array.from({ length: 5 }).map((_, col) => (
+              Array.from({ length: 7 }).map((_, col) => (
                 <rect
                   key={`${row}-${col}`}
                   x={col * 32 - 16}
@@ -389,6 +401,18 @@ export default function Home() {
             )}
           </svg>
         </div>
+
+        {/* Mobile-only Sell button below the banner, since the pill button
+            is hidden on small screens to keep the banner compact */}
+        <Link
+          to="/sell"
+          className="sm:hidden mt-4 flex items-center justify-center gap-1.5 bg-mustard hover:bg-mustard-dark text-white font-display font-bold text-sm px-7 py-3.5 rounded-full transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Sell an Item
+        </Link>
       </section>
     </div>
   );

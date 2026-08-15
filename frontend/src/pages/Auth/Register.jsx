@@ -4,7 +4,7 @@ import { useAuth } from '../../hooks/useAuth.js';
 import { Input } from '../../components/common/Input.jsx';
 import Button from '../../components/common/Button.jsx';
 
-const EMPTY = { name: '', email: '', password: '', phone: '', city: '', neighborhood: '' };
+const EMPTY = { name: '', email: '', password: '', phone: '', city: '', neighborhood: '', role: 'buyer' };
 
 export default function Register() {
   const { register } = useAuth();
@@ -64,6 +64,35 @@ export default function Register() {
           value={form.neighborhood}
           onChange={(e) => update('neighborhood', e.target.value)}
         />
+
+        <div>
+          <label className="block text-sm font-body font-medium text-ink mb-1.5">I want to</label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => update('role', 'buyer')}
+              className={`px-4 py-2.5 rounded-xl border text-sm font-display font-bold transition-colors ${
+                form.role === 'buyer'
+                  ? 'border-juniper bg-juniper/10 text-juniper'
+                  : 'border-line text-ink/60 hover:border-ink/30'
+              }`}
+            >
+              Buy items
+            </button>
+            <button
+              type="button"
+              onClick={() => update('role', 'seller')}
+              className={`px-4 py-2.5 rounded-xl border text-sm font-display font-bold transition-colors ${
+                form.role === 'seller'
+                  ? 'border-juniper bg-juniper/10 text-juniper'
+                  : 'border-line text-ink/60 hover:border-ink/30'
+              }`}
+            >
+              Sell items
+            </button>
+          </div>
+        </div>
+
         {error && <p className="text-clay text-sm">{error}</p>}
         <Button type="submit" disabled={submitting} className="w-full">
           {submitting ? 'Creating account…' : 'Sign up'}
