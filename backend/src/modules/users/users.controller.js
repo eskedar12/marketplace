@@ -1,5 +1,6 @@
 const asyncHandler = require('../../utils/asyncHandler');
 const usersService = require('./users.service');
+const ApiError = require('../../utils/ApiError');
 
 const getMe = asyncHandler(async (req, res) => {
   const user = await usersService.getProfile(req.user.id);
@@ -16,4 +17,14 @@ const updateMe = asyncHandler(async (req, res) => {
   res.json({ success: true, data: user });
 });
 
-module.exports = { getMe, getUserById, updateMe };
+const uploadAvatar = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    throw ApiError.badRequest('No image uploaded');
+  }
+  // multer-storage-cloudinary has already uploaded it — req.file.path is
+  // the resulting secure URL.
+  const user = await usersService.updateProfile(req.user.id, { profile_image: req.file.path });
+  res.json({ success: true, data: user });
+});
+
+module.exports = { getMe, getUserById, updateMe, uploadAvatar };

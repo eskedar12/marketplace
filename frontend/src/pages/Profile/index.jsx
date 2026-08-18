@@ -12,6 +12,7 @@ export default function Profile() {
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   useEffect(() => {
     usersApi
@@ -26,6 +27,25 @@ export default function Profile() {
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }));
     setSaved(false);
+  }
+
+  async function handleAvatarPicked(e) {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // allow re-picking the same file
+    if (!file) return;
+
+    setUploadingAvatar(true);
+    setError('');
+    try {
+      const res = await usersApi.uploadAvatar(file);
+      setProfile(res.data);
+      setForm(res.data);
+      updateStoredUser(res.data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUploadingAvatar(false);
+    }
   }
 
   async function handleSubmit(e) {
@@ -55,10 +75,39 @@ export default function Profile() {
   return (
     <div className="max-w-md mx-auto px-4 sm:px-6 py-8">
       <h1 className="text-2xl font-700 mb-1">Your profile</h1>
-      <p className="text-ink/60 text-sm font-body mb-6">
-        Rating: {Number(profile.rating_avg || 0).toFixed(1)} ★ ({profile.rating_count || 0} reviews)
-        {profile.is_verified && <span className="ml-2 text-juniper font-600">Verified</span>}
-      </p>
+      {profile.role === 'seller' && (
+        <p className="text-ink/60 text-sm font-body mb-6">
+          Rating: {Number(profile.rating_avg || 0).toFixed(1)} ★ ({profile.rating_count || 0} reviews)
+          {profile.is_verified && <span className="ml-2 text-juniper font-600">Verified</span>}
+        </p>
+      )}
+
+      <div className="flex items-center gap-4 mb-6">
+        <div className="relative w-20 h-20 rounded-full overflow-hidden bg-line flex-shrink-0">
+          {form.profile_image ? (
+            <img src={form.profile_image} alt="Your profile" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-ink/30 font-display font-bold text-2xl">
+              {form.name?.[0]?.toUpperCase()}
+            </div>
+          )}
+          {uploadingAvatar && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <Spinner className="!p-0" />
+            </div>
+          )}
+        </div>
+        <label className="text-sm font-display font-bold text-mustard hover:text-mustard-dark cursor-pointer">
+          Change photo
+          <input
+            type="file"
+            accept="image/png,image/jpeg"
+            className="hidden"
+            onChange={handleAvatarPicked}
+            disabled={uploadingAvatar}
+          />
+        </label>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input label="Full name" required value={form.name} onChange={(e) => update('name', e.target.value)} />

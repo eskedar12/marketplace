@@ -1,22 +1,55 @@
-const { query } = require('../../config/db');
+const { query, pool } = require('../../config/db');
 
 async function create(sellerId, data) {
-  const { rows } = await query(
-    `INSERT INTO listings (seller_id, category_id, title, description, price, condition, city, neighborhood, status)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'active')
-     RETURNING *`,
-    [
-      sellerId,
-      data.category_id,
-      data.title,
-      data.description,
-      data.price,
-      data.condition,
-      data.city,
-      data.neighborhood || null,
-    ]
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const { rows } = await client.query(
+      `INSERT INTO listings (seller_id, category_id, title, description, price, condition, city, neighborhood, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'active')
+       RETURNING *`,
+      [
+        sellerId,
+        data.category_id,
+        data.title,
+        data.description,
+        data.price,
+        data.condition,
+        data.city,
+        data.neighborhood || null,
+      ]
+    );
+    const listing = rows[0];
+
+    // First photo is the primary/thumbnail image; sort_order preserves
+    // the order the seller uploaded them in.
+    await insertImages(client, listing.id, data.images);
+
+    await client.query('COMMIT');
+    return listing;
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+async function insertImages(client, listingId, imageUrls) {
+  const values = [];
+  const placeholders = imageUrls
+    .map((url, idx) => {
+      const base = idx * 4;
+      values.push(listingId, url, idx === 0, idx);
+      return `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4})`;
+    })
+    .join(', ');
+
+  await client.query(
+    `INSERT INTO listing_images (listing_id, image_url, is_primary, sort_order) VALUES ${placeholders}`,
+    values
   );
-  return rows[0];
 }
 
 async function findById(id) {
@@ -120,17 +153,33 @@ async function search({ q, category_id, condition, min_price, max_price, city, n
 }
 
 async function update(id, fields) {
-  const keys = Object.keys(fields);
-  if (keys.length === 0) return findById(id);
+  const { images, ...columns } = fields;
+  const keys = Object.keys(columns);
 
-  const setClause = keys.map((key, idx) => `${key} = $${idx + 2}`).join(', ');
-  const values = keys.map((key) => fields[key]);
+  if (keys.length === 0 && !images) return findById(id);
 
-  const { rows } = await query(
-    `UPDATE listings SET ${setClause} WHERE id = $1 RETURNING *`,
-    [id, ...values]
-  );
-  return rows[0] || null;
+  if (keys.length > 0) {
+    const setClause = keys.map((key, idx) => `${key} = $${idx + 2}`).join(', ');
+    const values = keys.map((key) => columns[key]);
+    await query(`UPDATE listings SET ${setClause} WHERE id = $1`, [id, ...values]);
+  }
+
+  if (images) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('DELETE FROM listing_images WHERE listing_id = $1', [id]);
+      await insertImages(client, id, images);
+      await client.query('COMMIT');
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
+
+  return findById(id);
 }
 
 // Soft delete: the schema's listing_status enum includes 'removed' precisely

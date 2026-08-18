@@ -38,7 +38,8 @@ export default function Inbox() {
               className="flex items-center justify-between py-4 px-2 hover:bg-white transition-colors gap-4"
             >
               <div className="min-w-0">
-                <p className="font-display font-600 text-sm truncate">{c.listing_title}</p>
+                <p className="font-display font-600 text-sm truncate">{c.other_user_name}</p>
+                <p className="text-xs text-ink/50 font-body mt-0.5 truncate">{c.listing_title}</p>
                 <p className="text-xs text-ink/50 font-body mt-0.5 truncate">
                   {c.last_message || 'No messages yet'}
                 </p>

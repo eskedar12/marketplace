@@ -8,10 +8,21 @@ async function findByEmail(email) {
 }
 
 async function findById(id) {
+  // Computes rating_avg/rating_count live from the ratings table instead
+  // of trusting the stored users.rating_avg/rating_count columns — those
+  // columns need a working trigger to stay in sync, which is one more
+  // thing that can silently drift out of date. This is always correct.
   const { rows } = await query(
-    `SELECT id, name, email, phone, city, neighborhood, profile_image, role,
-            is_verified, rating_avg, rating_count, created_at, updated_at
-     FROM users WHERE id = $1`,
+    `SELECT u.id, u.name, u.email, u.phone, u.city, u.neighborhood, u.profile_image, u.role,
+            u.is_verified, u.created_at, u.updated_at,
+            COALESCE(r.avg_score, 0) AS rating_avg,
+            COALESCE(r.total, 0) AS rating_count
+     FROM users u
+     LEFT JOIN LATERAL (
+       SELECT ROUND(AVG(score)::numeric, 2) AS avg_score, COUNT(*) AS total
+       FROM ratings WHERE rated_user_id = u.id
+     ) r ON true
+     WHERE u.id = $1`,
     [id]
   );
   return rows[0] || null;
@@ -36,12 +47,11 @@ async function updateUser(id, fields) {
   const setClause = keys.map((key, i) => `${key} = $${i + 2}`).join(', ');
   const values = keys.map((key) => fields[key]);
 
-  const { rows } = await query(
-    `UPDATE users SET ${setClause} WHERE id = $1
-     RETURNING id, name, email, phone, city, neighborhood, profile_image, updated_at`,
-    [id, ...values]
-  );
-  return rows[0] || null;
+  await query(`UPDATE users SET ${setClause} WHERE id = $1`, [id, ...values]);
+  // Route back through findById so the response always has the full,
+  // consistent profile shape (role, live rating_avg/rating_count) —
+  // the same shape /users/me returns.
+  return findById(id);
 }
 
 module.exports = { findByEmail, findById, createUser, updateUser };

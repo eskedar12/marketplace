@@ -11,10 +11,13 @@ const createListingSchema = Joi.object({
   condition: Joi.string().valid(...CONDITIONS).required(),
   city: Joi.string().max(100).required(),
   neighborhood: Joi.string().max(100).allow('', null).optional(),
+  // At least 1 photo required; capped at 5 to keep pages light. URLs
+  // come from POST /listings/upload-images (Cloudinary), not typed by hand.
+  images: Joi.array().items(Joi.string().uri()).min(1).max(5).required(),
 });
 
 const updateListingSchema = createListingSchema.fork(
-  ['title', 'description', 'price', 'category_id', 'condition', 'city'],
+  ['title', 'description', 'price', 'category_id', 'condition', 'city', 'images'],
   (schema) => schema.optional()
 );
 

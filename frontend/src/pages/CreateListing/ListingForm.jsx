@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { categoriesApi } from '../../api/listings.api.js';
+import { categoriesApi, listingsApi } from '../../api/listings.api.js';
 import { CONDITIONS } from '../../utils/formatters.js';
 import { Input, Textarea, Select } from '../../components/common/Input.jsx';
 import Button from '../../components/common/Button.jsx';
+
+const MIN_PHOTOS = 1;
+const MAX_PHOTOS = 5;
 
 export default function ListingForm({ initial, onSubmit, submitLabel }) {
   const [categories, setCategories] = useState([]);
@@ -17,8 +20,15 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
       neighborhood: '',
     }
   );
+  // photos: existing image URLs (when editing) mixed with newly-picked
+  // File objects (when adding more) — kept in one ordered array so the
+  // preview grid and the final upload both work off a single list.
+  const [photos, setPhotos] = useState(
+    (initial?.images || []).map((url) => ({ kind: 'existing', url }))
+  );
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [uploadingCount, setUploadingCount] = useState(0);
 
   useEffect(() => {
     categoriesApi.getAll().then((res) => setCategories(res.data)).catch(() => {});
@@ -28,21 +38,110 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
+  function handleFilesPicked(e) {
+    const picked = Array.from(e.target.files || []);
+    e.target.value = ''; // allow re-picking the same file after removing it
+    setPhotos((prev) => {
+      const room = MAX_PHOTOS - prev.length;
+      const next = picked.slice(0, room).map((file) => ({
+        kind: 'new',
+        file,
+        previewUrl: URL.createObjectURL(file),
+      }));
+      return [...prev, ...next];
+    });
+  }
+
+  function removePhoto(idx) {
+    setPhotos((prev) => {
+      const removed = prev[idx];
+      if (removed.kind === 'new') URL.revokeObjectURL(removed.previewUrl);
+      return prev.filter((_, i) => i !== idx);
+    });
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+
+    if (photos.length < MIN_PHOTOS) {
+      setError(`Add at least ${MIN_PHOTOS} photo of the item.`);
+      return;
+    }
+
     setSubmitting(true);
     try {
-      await onSubmit({ ...form, price: Number(form.price) });
+      // Upload only the newly-picked files; existing URLs (when editing)
+      // are already on Cloudinary and get reused as-is.
+      const newFiles = photos.filter((p) => p.kind === 'new').map((p) => p.file);
+      let uploadedUrls = [];
+      if (newFiles.length > 0) {
+        setUploadingCount(newFiles.length);
+        const res = await listingsApi.uploadImages(newFiles);
+        uploadedUrls = res.data.urls;
+        setUploadingCount(0);
+      }
+
+      // Re-assemble in the order the seller arranged them.
+      let uploadedIdx = 0;
+      const images = photos.map((p) => (p.kind === 'existing' ? p.url : uploadedUrls[uploadedIdx++]));
+
+      await onSubmit({ ...form, price: Number(form.price), images });
     } catch (err) {
       setError(err.details ? err.details.map((d) => d.message).join(', ') : err.message);
     } finally {
       setSubmitting(false);
+      setUploadingCount(0);
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-lg">
+      <div>
+        <label className="block text-sm font-body font-medium text-ink mb-1.5">
+          Photos <span className="text-ink/40 font-normal">({photos.length}/{MAX_PHOTOS}, at least {MIN_PHOTOS})</span>
+        </label>
+
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-3">
+          {photos.map((p, idx) => (
+            <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-line group">
+              <img
+                src={p.kind === 'existing' ? p.url : p.previewUrl}
+                alt={`Photo ${idx + 1}`}
+                className="w-full h-full object-cover"
+              />
+              {idx === 0 && (
+                <span className="absolute top-1 left-1 bg-ink/70 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                  Cover
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => removePhoto(idx)}
+                className="absolute top-1 right-1 bg-black/60 hover:bg-clay text-white rounded-full w-5 h-5 flex items-center justify-center text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label="Remove photo"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+
+          {photos.length < MAX_PHOTOS && (
+            <label className="aspect-square rounded-lg border-2 border-dashed border-line hover:border-mustard flex flex-col items-center justify-center gap-1 cursor-pointer text-ink/40 hover:text-mustard transition-colors">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span className="text-xs font-body">Add</span>
+              <input type="file" accept="image/png,image/jpeg" multiple className="hidden" onChange={handleFilesPicked} />
+            </label>
+          )}
+        </div>
+
+        <p className="text-xs text-ink/50 font-body">
+          Tip: include the front, back, and a close-up of any wear so buyers know exactly what they're getting.
+        </p>
+      </div>
+
       <Input
         label="Title"
         required
@@ -98,7 +197,11 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
       {error && <p className="text-clay text-sm font-body">{error}</p>}
 
       <Button type="submit" disabled={submitting}>
-        {submitting ? 'Saving…' : submitLabel}
+        {submitting
+          ? uploadingCount > 0
+            ? `Uploading ${uploadingCount} photo${uploadingCount > 1 ? 's' : ''}…`
+            : 'Saving…'
+          : submitLabel}
       </Button>
     </form>
   );

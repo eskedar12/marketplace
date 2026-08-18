@@ -12,6 +12,13 @@ export const usersApi = {
   getMe: () => axiosClient.get('/users/me'),
   updateMe: (payload) => axiosClient.patch('/users/me', payload),
   getById: (id) => axiosClient.get(`/users/${id}`),
+  uploadAvatar: (file) => {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    return axiosClient.post('/users/me/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
 };
 
 export const ratingsApi = {

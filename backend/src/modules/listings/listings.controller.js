@@ -1,5 +1,16 @@
 const asyncHandler = require('../../utils/asyncHandler');
 const listingsService = require('./listings.service');
+const ApiError = require('../../utils/ApiError');
+
+// multer-storage-cloudinary has already uploaded each file to Cloudinary
+// by the time this runs — req.files[].path is the resulting secure URL.
+const uploadImages = asyncHandler(async (req, res) => {
+  if (!req.files || req.files.length < 1) {
+    throw ApiError.badRequest('Upload at least 1 photo.');
+  }
+  const urls = req.files.map((f) => f.path);
+  res.status(201).json({ success: true, data: { urls } });
+});
 
 const create = asyncHandler(async (req, res) => {
   const listing = await listingsService.createListing(req.user.id, req.body);
@@ -37,4 +48,4 @@ const getMine = asyncHandler(async (req, res) => {
   res.json({ success: true, data: listings });
 });
 
-module.exports = { create, getAll, getOne, update, remove, getMine };
+module.exports = { create, getAll, getOne, update, remove, getMine, uploadImages };

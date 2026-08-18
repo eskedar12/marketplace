@@ -12,6 +12,16 @@ export const listingsApi = {
   create: (payload) => axiosClient.post('/listings', payload),
   update: (id, payload) => axiosClient.patch(`/listings/${id}`, payload),
   remove: (id) => axiosClient.delete(`/listings/${id}`),
+  // files: an array of File objects from an <input type="file" multiple">.
+  // Returns { urls: string[] } — feed straight into listingsApi.create's
+  // `images` field.
+  uploadImages: (files) => {
+    const formData = new FormData();
+    files.forEach((file) => formData.append('images', file));
+    return axiosClient.post('/listings/upload-images', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
 };
 
 export const categoriesApi = {

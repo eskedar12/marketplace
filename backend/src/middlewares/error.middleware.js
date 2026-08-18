@@ -13,7 +13,9 @@ function errorMiddleware(err, req, res, next) {
 
   res.status(statusCode).json({
     success: false,
-    message: isOperational ? err.message : 'Something went wrong',
+    // In development, show the real error so you're not debugging blind —
+    // production still hides internals behind a generic message.
+    message: isOperational || process.env.NODE_ENV !== 'production' ? err.message : 'Something went wrong',
     ...(err.details ? { details: err.details } : {}),
   });
 }
