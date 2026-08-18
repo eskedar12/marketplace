@@ -8,6 +8,9 @@ export const listingsApi = {
     return axiosClient.get('/listings', { params: cleaned });
   },
   getOne: (id) => axiosClient.get(`/listings/${id}`),
+  // Fetched on demand, only when the buyer clicks "Call Seller" — see
+  // ListingDetail. Never bundled into getOne's response.
+  getSellerPhone: (id) => axiosClient.get(`/listings/${id}/seller-phone`),
   getMine: () => axiosClient.get('/listings/me/mine'),
   create: (payload) => axiosClient.post('/listings', payload),
   update: (id, payload) => axiosClient.patch(`/listings/${id}`, payload),

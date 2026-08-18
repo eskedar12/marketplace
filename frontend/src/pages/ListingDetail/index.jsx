@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { listingsApi, favoritesApi, reportsApi } from '../../api/listings.api.js';
+import { listingsApi, reportsApi } from '../../api/listings.api.js';
 import { conversationsApi } from '../../api/conversations.api.js';
+import { cartApi } from '../../api/cart.api.js';
+import { ordersApi } from '../../api/orders.api.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { conditionLabel, formatPrice, timeAgo } from '../../utils/formatters.js';
 import Button from '../../components/common/Button.jsx';
@@ -16,11 +18,14 @@ export default function ListingDetail() {
   const [listing, setListing] = useState(null);
   const [error, setError] = useState('');
   const [activeImage, setActiveImage] = useState(0);
-  const [favorited, setFavorited] = useState(false);
+  const [inCart, setInCart] = useState(false);
   const [showReport, setShowReport] = useState(false);
   const [reportReason, setReportReason] = useState('');
   const [reportSent, setReportSent] = useState(false);
   const [contacting, setContacting] = useState(false);
+  const [callingSeller, setCallingSeller] = useState(false);
+  const [updatingCart, setUpdatingCart] = useState(false);
+  const [buyingNow, setBuyingNow] = useState(false);
 
   useEffect(() => {
     listingsApi
@@ -29,18 +34,31 @@ export default function ListingDetail() {
       .catch((err) => setError(err.message));
   }, [id]);
 
-  async function toggleFavorite() {
+  // Reflects whether this listing is already in the buyer's cart, so the
+  // button shows the right state on load instead of always starting blank.
+  useEffect(() => {
+    if (!user) return;
+    cartApi
+      .getMine()
+      .then((res) => setInCart(res.data.some((item) => item.listing_id === id)))
+      .catch(() => {});
+  }, [id, user]);
+
+  async function toggleCart() {
     if (!user) return navigate('/login', { state: { from: `/listings/${id}` } });
+    setUpdatingCart(true);
     try {
-      if (favorited) {
-        await favoritesApi.remove(id);
-        setFavorited(false);
+      if (inCart) {
+        await cartApi.remove(id);
+        setInCart(false);
       } else {
-        await favoritesApi.add(id);
-        setFavorited(true);
+        await cartApi.add(id);
+        setInCart(true);
       }
     } catch (err) {
       setError(err.message);
+    } finally {
+      setUpdatingCart(false);
     }
   }
 
@@ -68,6 +86,34 @@ export default function ListingDetail() {
     }
   }
 
+  async function callSeller() {
+    if (!user) return navigate('/login', { state: { from: `/listings/${id}` } });
+    setCallingSeller(true);
+    try {
+      const res = await listingsApi.getSellerPhone(id);
+      // Hand off straight to the device's dialer — the number is never
+      // rendered on the page, only used for this one redirect.
+      window.location.href = `tel:${res.data.phone}`;
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setCallingSeller(false);
+    }
+  }
+
+  async function buyNow() {
+    if (!user) return navigate('/login', { state: { from: `/listings/${id}` } });
+    setBuyingNow(true);
+    setError('');
+    try {
+      const res = await ordersApi.checkout([id]);
+      window.location.href = res.data.checkoutUrl;
+    } catch (err) {
+      setError(err.message);
+      setBuyingNow(false);
+    }
+  }
+
   if (error && !listing) {
     return <p className="max-w-3xl mx-auto px-4 py-16 text-clay font-body">{error}</p>;
   }
@@ -77,6 +123,7 @@ export default function ListingDetail() {
 
   const images = listing.images?.length ? listing.images : [];
   const isOwnListing = user?.id === listing.seller_id;
+  const isSold = listing.status !== 'active';
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 md:grid-cols-5 gap-8">
@@ -124,48 +171,40 @@ export default function ListingDetail() {
           <div className="border border-line rounded-2xl p-4 space-y-3 bg-white">
             <p className="font-display font-600 text-sm">Contact the seller</p>
             <div className="flex flex-wrap gap-2">
-              {listing.seller_phone && (
-                <Button as="a" href={`tel:${listing.seller_phone}`} className="flex-1 text-center rounded-xl">
-                  Call
-                </Button>
-              )}
-              {listing.seller_telegram && (
+              {listing.seller_allows_calls && (
                 <Button
-                  as="a"
-                  href={`https://t.me/${listing.seller_telegram}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  variant="outline"
-                  className="flex-1 text-center rounded-xl"
+                  onClick={callSeller}
+                  disabled={callingSeller || isSold}
+                  className="flex-1 text-center rounded-xl whitespace-nowrap"
                 >
-                  Telegram
+                  📞 {callingSeller ? 'Calling…' : 'Call'}
                 </Button>
               )}
               <Button
                 variant="accent"
                 onClick={startConversation}
                 disabled={contacting}
-                className="flex-1 text-center rounded-xl"
+                className="flex-1 text-center rounded-xl whitespace-nowrap"
               >
-                {contacting ? 'Opening…' : 'Message on ReGebeya'}
+                💬 {contacting ? 'Opening…' : 'Message'}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={toggleCart}
+                disabled={updatingCart || isSold}
+                className="flex-1 text-center rounded-xl whitespace-nowrap"
+              >
+                🛒 {inCart ? 'In Cart' : 'Add to Cart'}
               </Button>
             </div>
-            <button onClick={toggleFavorite} className="flex items-center gap-1.5 text-sm font-body text-ink/60 hover:text-mustard transition-colors">
-              <svg
-                className={`w-4 h-4 ${favorited ? 'text-clay' : 'text-ink/40'}`}
-                fill={favorited ? 'currentColor' : 'none'}
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 20.5s-7-4.35-9.5-8.5C.9 8.5 2.5 5 6 5c2 0 3.3 1.1 4 2.1C10.7 6.1 12 5 14 5c3.5 0 5.1 3.5 3.5 7-2.5 4.15-9.5 8.5-9.5 8.5z"
-                />
-              </svg>
-              {favorited ? 'Saved' : 'Save for later'}
-            </button>
+
+            <Button
+              onClick={buyNow}
+              disabled={buyingNow || isSold}
+              className="w-full text-center rounded-xl bg-juniper text-white hover:bg-juniper-dark py-3 text-base"
+            >
+              {isSold ? 'Sold' : `🛒 ${buyingNow ? 'Redirecting…' : `Buy Now - ${formatPrice(listing.price)}`}`}
+            </Button>
           </div>
         )}
 

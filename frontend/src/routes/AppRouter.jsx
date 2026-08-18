@@ -16,6 +16,9 @@ import Profile from '../pages/Profile/index.jsx';
 import PublicProfile from '../pages/Profile/PublicProfile.jsx';
 import Favorites from '../pages/Favorites/Favorites.jsx';
 import Notifications from '../pages/Notifications/Notifications.jsx';
+import Cart from '../pages/Cart/index.jsx';
+import Orders from '../pages/Orders/Orders.jsx';
+import OrderComplete from '../pages/Orders/OrderComplete.jsx';
 
 // MyListings doesn't have its own top-level folder in the requested
 // structure — it's seller-account content, so it lives alongside the
@@ -78,6 +81,30 @@ export default function AppRouter() {
         element={
           <ProtectedRoute>
             <Notifications />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/cart"
+        element={
+          <ProtectedRoute>
+            <Cart />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/orders"
+        element={
+          <ProtectedRoute>
+            <Orders />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/orders/complete"
+        element={
+          <ProtectedRoute>
+            <OrderComplete />
           </ProtectedRoute>
         }
       />

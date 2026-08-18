@@ -11,6 +11,13 @@ async function getListing(id) {
   return listing;
 }
 
+async function getSellerPhone(listingId) {
+  const row = await listingsRepository.getSellerPhone(listingId);
+  if (!row) throw ApiError.notFound('Listing not found');
+  if (!row.allow_calls) throw ApiError.forbidden('This seller is not accepting calls');
+  return row.phone;
+}
+
 async function searchListings(filters) {
   return listingsRepository.search(filters);
 }
@@ -41,6 +48,7 @@ async function getListingsByUser(userId) {
 module.exports = {
   createListing,
   getListing,
+  getSellerPhone,
   searchListings,
   updateListing,
   deleteListing,

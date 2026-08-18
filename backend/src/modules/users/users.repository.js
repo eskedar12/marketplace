@@ -14,7 +14,7 @@ async function findById(id) {
   // thing that can silently drift out of date. This is always correct.
   const { rows } = await query(
     `SELECT u.id, u.name, u.email, u.phone, u.city, u.neighborhood, u.profile_image, u.role,
-            u.is_verified, u.created_at, u.updated_at,
+            u.allow_calls, u.is_verified, u.created_at, u.updated_at,
             COALESCE(r.avg_score, 0) AS rating_avg,
             COALESCE(r.total, 0) AS rating_count
      FROM users u

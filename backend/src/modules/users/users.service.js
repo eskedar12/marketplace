@@ -10,7 +10,7 @@ async function getProfile(userId) {
 async function updateProfile(userId, updates) {
   // Whitelist updatable fields — never let a client update password_hash,
   // rating_avg, rating_count, or is_verified through this endpoint.
-  const allowed = ['name', 'phone', 'city', 'neighborhood', 'profile_image'];
+  const allowed = ['name', 'phone', 'city', 'neighborhood', 'profile_image', 'allow_calls'];
   const fields = {};
   for (const key of allowed) {
     if (updates[key] !== undefined) fields[key] = updates[key];

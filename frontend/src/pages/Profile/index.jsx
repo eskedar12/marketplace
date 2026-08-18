@@ -58,6 +58,7 @@ export default function Profile() {
         phone: form.phone,
         city: form.city,
         neighborhood: form.neighborhood,
+        allow_calls: form.allow_calls !== false,
       });
       setProfile(res.data);
       updateStoredUser(res.data);
@@ -119,6 +120,23 @@ export default function Profile() {
           value={form.neighborhood || ''}
           onChange={(e) => update('neighborhood', e.target.value)}
         />
+
+        {profile.role === 'seller' && (
+          <label className="flex items-start gap-2.5 py-1 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.allow_calls !== false}
+              onChange={(e) => update('allow_calls', e.target.checked)}
+              className="mt-0.5 w-4 h-4 accent-mustard"
+            />
+            <span>
+              <span className="block text-sm font-body text-ink/80">Allow buyers to call me</span>
+              <span className="block text-xs text-ink/40 font-body">
+                Shows a Call Seller button on your listings. Your number is never shown as text — buyers only get it when they tap to call.
+              </span>
+            </span>
+          </label>
+        )}
 
         {error && <p className="text-clay text-sm font-body">{error}</p>}
         {saved && <p className="text-juniper text-sm font-body">Saved.</p>}

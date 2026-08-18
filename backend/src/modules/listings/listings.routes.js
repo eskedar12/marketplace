@@ -16,6 +16,7 @@ router.get('/', validate(searchQuerySchema, 'query'), controller.getAll);
 router.get('/:id', controller.getOne);
 
 // Protected — must be logged in
+router.get('/:id/seller-phone', requireAuth, controller.getSellerPhone);
 router.get('/me/mine', requireAuth, controller.getMine);
 // Upload listing photos to Cloudinary first, get back their URLs, then
 // send those URLs along with the rest of the form to POST /listings.

@@ -33,6 +33,14 @@ const getOne = asyncHandler(async (req, res) => {
   res.json({ success: true, data: listing });
 });
 
+// Requires login: revealing a phone number is a deliberate, attributable
+// action, not something an anonymous visitor should get by hitting the
+// endpoint directly.
+const getSellerPhone = asyncHandler(async (req, res) => {
+  const phone = await listingsService.getSellerPhone(req.params.id);
+  res.json({ success: true, data: { phone } });
+});
+
 const update = asyncHandler(async (req, res) => {
   const listing = await listingsService.updateListing(req.params.id, req.user.id, req.body);
   res.json({ success: true, data: listing });
@@ -48,4 +56,4 @@ const getMine = asyncHandler(async (req, res) => {
   res.json({ success: true, data: listings });
 });
 
-module.exports = { create, getAll, getOne, update, remove, getMine, uploadImages };
+module.exports = { create, getAll, getOne, getSellerPhone, update, remove, getMine, uploadImages };

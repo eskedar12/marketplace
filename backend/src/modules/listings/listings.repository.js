@@ -53,10 +53,18 @@ async function insertImages(client, listingId, imageUrls) {
 }
 
 async function findById(id) {
+  // Deliberately does NOT select the seller's raw phone number here —
+  // this response is fetched (and cached in browser history/devtools)
+  // just from viewing the listing, before the buyer has chosen to call.
+  // seller_allows_calls tells the frontend whether to show the Call
+  // Seller button at all; the actual number is only ever revealed via
+  // getSellerPhone(), which the frontend calls at the moment of a click.
   const listingResult = await query(
-    `SELECT l.*, c.name AS category_name, c.slug AS category_slug
+    `SELECT l.*, c.name AS category_name, c.slug AS category_slug,
+            u.name AS seller_name, u.allow_calls AS seller_allows_calls
      FROM listings l
      JOIN categories c ON c.id = l.category_id
+     JOIN users u ON u.id = l.seller_id
      WHERE l.id = $1`,
     [id]
   );
@@ -205,4 +213,27 @@ async function findByUser(sellerId) {
   return rows;
 }
 
-module.exports = { create, findById, search, update, softRemove, findByUser };
+// Fetches just what's needed to place a call: the seller's phone number
+// and whether they currently allow calls at all. Kept separate from
+// findById so the number is only ever fetched at the moment a buyer
+// clicks Call Seller — never bundled into the general listing payload.
+async function getSellerPhone(listingId) {
+  const { rows } = await query(
+    `SELECT u.phone, u.allow_calls
+     FROM listings l
+     JOIN users u ON u.id = l.seller_id
+     WHERE l.id = $1`,
+    [listingId]
+  );
+  return rows[0] || null;
+}
+
+// Fetches multiple listings by id in one query — used by checkout to
+// validate + price every item in a cart/buy-now request at once.
+async function findManyByIds(ids) {
+  if (ids.length === 0) return [];
+  const { rows } = await query('SELECT * FROM listings WHERE id = ANY($1::uuid[])', [ids]);
+  return rows;
+}
+
+module.exports = { create, findById, findManyByIds, search, update, softRemove, findByUser, getSellerPhone };

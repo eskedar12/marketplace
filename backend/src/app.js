@@ -14,6 +14,8 @@ const favoritesRoutes = require('./modules/favorites/favorites.routes');
 const conversationsRoutes = require('./modules/conversations/conversations.routes');
 const ratingsRoutes = require('./modules/ratings/ratings.routes');
 const reportsRoutes = require('./modules/reports/reports.routes');
+const cartRoutes = require('./modules/cart/cart.routes');
+const ordersRoutes = require('./modules/orders/orders.routes');
 
 const app = express();
 
@@ -37,6 +39,8 @@ app.use(`${API_PREFIX}/favorites`, favoritesRoutes);
 app.use(`${API_PREFIX}/conversations`, conversationsRoutes);
 app.use(`${API_PREFIX}/ratings`, ratingsRoutes);
 app.use(`${API_PREFIX}/reports`, reportsRoutes);
+app.use(`${API_PREFIX}/cart`, cartRoutes);
+app.use(`${API_PREFIX}/orders`, ordersRoutes);
 
 // ---- 404 for unmatched routes ----
 app.use((req, res) => {
