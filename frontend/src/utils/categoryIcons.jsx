@@ -80,15 +80,15 @@ export const CATEGORY_VISUALS = [
     ),
   },
   {
-    name: 'Hobbies',
-    dbSlug: 'hobbies',
+    name: 'Jewelry',
+    dbSlug: 'jewelry',
     bg: 'bg-rose-50',
     fg: 'text-rose-500',
     icon: (className) => (
       <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <circle cx="8" cy="17" r="3" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M11 17V4l7 2v9" />
-        <circle cx="18" cy="15" r="2.2" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 2L5 9h14l-3-7H8z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 9l2 13h10l2-13H5z" />
+        <circle cx="12" cy="13" r="2" />
       </svg>
     ),
   },

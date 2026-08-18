@@ -172,9 +172,11 @@ export default function Home() {
   // ---- Hero theme (background photo, tint, headline) swaps per
   // category so each category "feels" like its own page. ----------
   const heroTheme = getHeroTheme(activeCategory?.dbSlug);
-  const heroImageUrl = activeCategory
-    ? `https://loremflickr.com/1600/900/${heroTheme.keyword}?lock=${hashString(activeCategory.dbSlug)}`
-    : DEFAULT_HERO_IMAGE;
+  const heroImageUrl =
+    heroTheme.image ||
+    (activeCategory
+      ? `https://loremflickr.com/1600/900/${heroTheme.keyword}?lock=${hashString(activeCategory.dbSlug)}`
+      : DEFAULT_HERO_IMAGE);
 
   function handleSearchSubmit(e) {
     e.preventDefault();

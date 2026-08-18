@@ -13,6 +13,7 @@
 
 export const DEFAULT_HERO_THEME = {
   keyword: 'marketplace,flea-market',
+  image: '/hero.jpg',
   headlineLead: 'Every',
   headlineHighlight: 'kinda',
   headlineTail: 'thing, for every kinda person.',
@@ -21,54 +22,66 @@ export const DEFAULT_HERO_THEME = {
 export const HERO_THEMES = {
   electronics: {
     keyword: 'smartphone,laptop',
+    image: '/electronics.jpg',
     headlineLead: 'Every',
     headlineHighlight: 'gadget',
     headlineTail: 'you need, at a price that makes sense.',
   },
   furniture: {
     keyword: 'sofa,livingroom',
+    image: '/furniture.jpg',
     headlineLead: 'Furnish',
     headlineHighlight: 'your home',
     headlineTail: 'without paying for new.',
   },
   apparel: {
     keyword: 'clothing,fashion',
+    image: '/apparel.jpg',
     headlineLead: 'Refresh',
     headlineHighlight: 'your style',
     headlineTail: 'for less than you think.',
   },
   vehicles: {
     keyword: 'car,automobile',
+    image: '/vehicle.jpg',
+    // the public folder and set image: '/vehicles.jpg' here.
     headlineLead: 'Find',
     headlineHighlight: 'your ride',
     headlineTail: 'from trusted local sellers.',
   },
   'household-appliances': {
     keyword: 'refrigerator,kitchen',
+    // TODO: no local image yet for this category — add
+    // /household-appliances.jpg to the public folder and set
+    // image: '/household-appliances.jpg' here.
     headlineLead: 'Every',
     headlineHighlight: 'appliance',
     headlineTail: 'your home has been missing.',
   },
   books: {
     keyword: 'bookshelf,books',
+    image: '/books.jpg',
     headlineLead: 'Great',
     headlineHighlight: 'reads',
     headlineTail: 'waiting for a new shelf.',
   },
   tools: {
     keyword: 'toolbox,workshop',
+    image: '/tools.jpg',
     headlineLead: 'Get the',
     headlineHighlight: 'job done',
     headlineTail: 'with tools that already work.',
   },
   hobbies: {
     keyword: 'guitar,hobby',
+    image: '/hobbies.jpg',
     headlineLead: 'Pick up',
     headlineHighlight: 'a new hobby',
     headlineTail: 'without the new-price tag.',
   },
   office: {
     keyword: 'office,desk',
+    image: '/office.jpg',
     headlineLead: 'Set up',
     headlineHighlight: 'your workspace',
     headlineTail: 'for a fraction of retail.',
