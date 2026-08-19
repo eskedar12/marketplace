@@ -208,8 +208,7 @@ export default function Home() {
           )}
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight mb-4 font-display drop-shadow-lg">
-            {heroTheme.headlineLead} <span className="text-mustard">{heroTheme.headlineHighlight}</span>{' '}
-            {heroTheme.headlineTail}
+            Quality <span className="text-mustard">finds</span>, affordable <span className="text-mustard">prices</span>, all in one place.
           </h1>
 
           <form
