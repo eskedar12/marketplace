@@ -72,12 +72,12 @@ export const HERO_THEMES = {
     headlineHighlight: 'job done',
     headlineTail: 'with tools that already work.',
   },
-  hobbies: {
-    keyword: 'guitar,hobby',
-    image: '/hobbies.jpg',
-    headlineLead: 'Pick up',
-    headlineHighlight: 'a new hobby',
-    headlineTail: 'without the new-price tag.',
+  jewelry: {
+    keyword: 'necklace,ring',
+    image: '/jewelry.jpg',
+    headlineLead: 'Find',
+    headlineHighlight: 'your perfect piece',
+    headlineTail: 'without the premium price tag.',
   },
   office: {
     keyword: 'office,desk',
