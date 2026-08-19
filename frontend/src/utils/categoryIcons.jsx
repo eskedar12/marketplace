@@ -10,6 +10,7 @@ import React from 'react';
 export const CATEGORY_VISUALS = [
   {
     name: 'Electronics',
+    i18nKey: 'catElectronics',
     dbSlug: 'electronics',
     bg: 'bg-indigo-50',
     fg: 'text-indigo-600',
@@ -22,6 +23,7 @@ export const CATEGORY_VISUALS = [
   },
   {
     name: 'Furniture & Home',
+    i18nKey: 'catFurniture',
     dbSlug: 'furniture',
     bg: 'bg-amber-50',
     fg: 'text-amber-700',
@@ -35,6 +37,7 @@ export const CATEGORY_VISUALS = [
   },
   {
     name: 'Fashion',
+    i18nKey: 'catFashion',
     dbSlug: 'apparel',
     bg: 'bg-orange-50',
     fg: 'text-orange-600',
@@ -46,6 +49,7 @@ export const CATEGORY_VISUALS = [
   },
   {
     name: 'Vehicles',
+    i18nKey: 'catVehicles',
     dbSlug: 'vehicles',
     bg: 'bg-emerald-50',
     fg: 'text-emerald-600',
@@ -59,6 +63,7 @@ export const CATEGORY_VISUALS = [
   },
   {
     name: 'Books & Education',
+    i18nKey: 'catBooks',
     dbSlug: 'books',
     bg: 'bg-blue-50',
     fg: 'text-blue-600',
@@ -70,6 +75,7 @@ export const CATEGORY_VISUALS = [
   },
   {
     name: 'Tools & Equipment',
+    i18nKey: 'catTools',
     dbSlug: 'tools',
     bg: 'bg-yellow-50',
     fg: 'text-yellow-700',
@@ -81,6 +87,7 @@ export const CATEGORY_VISUALS = [
   },
   {
     name: 'Jewelry',
+    i18nKey: 'catJewelry',
     dbSlug: 'jewelry',
     bg: 'bg-rose-50',
     fg: 'text-rose-500',
@@ -94,6 +101,7 @@ export const CATEGORY_VISUALS = [
   },
   {
     name: 'Office & Business',
+    i18nKey: 'catOffice',
     dbSlug: 'office',
     bg: 'bg-stone-100',
     fg: 'text-stone-600',
@@ -105,6 +113,7 @@ export const CATEGORY_VISUALS = [
   },
   {
     name: 'Other',
+    i18nKey: 'catOther',
     dbSlug: 'other',
     bg: 'bg-gray-100',
     fg: 'text-gray-500',
