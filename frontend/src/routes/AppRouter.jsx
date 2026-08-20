@@ -20,6 +20,16 @@ import Notifications from '../pages/Notifications/Notifications.jsx';
 import Cart from '../pages/Cart/index.jsx';
 import Orders from '../pages/Orders/Orders.jsx';
 import OrderComplete from '../pages/Orders/OrderComplete.jsx';
+import HelpCenter from '../pages/Help/HelpCenter.jsx';
+import HowToBuy from '../pages/Help/HowToBuy.jsx';
+import HowToSell from '../pages/Help/HowToSell.jsx';
+import PaymentSafety from '../pages/Help/PaymentSafety.jsx';
+import ContactSupport from '../pages/Help/ContactSupport.jsx';
+import SafetyCenter from '../pages/Help/SafetyCenter.jsx';
+import AboutUs from '../pages/About/AboutUs.jsx';
+import OurMission from '../pages/About/OurMission.jsx';
+import TermsOfUse from '../pages/About/TermsOfUse.jsx';
+import PrivacyPolicy from '../pages/About/PrivacyPolicy.jsx';
 
 // MyListings doesn't have its own top-level folder in the requested
 // structure — it's seller-account content, so it lives alongside the
@@ -36,6 +46,17 @@ export default function AppRouter() {
       <Route path="/register" element={<Register />} />
       <Route path="/listings/:id" element={<ListingDetail />} />
       <Route path="/users/:id" element={<PublicProfile />} />
+
+      <Route path="/help" element={<HelpCenter />} />
+      <Route path="/help/how-to-buy" element={<HowToBuy />} />
+      <Route path="/help/how-to-sell" element={<HowToSell />} />
+      <Route path="/help/payment-safety" element={<PaymentSafety />} />
+      <Route path="/help/contact" element={<ContactSupport />} />
+      <Route path="/safety" element={<SafetyCenter />} />
+      <Route path="/about" element={<AboutUs />} />
+      <Route path="/mission" element={<OurMission />} />
+      <Route path="/terms" element={<TermsOfUse />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
 
       <Route
         path="/sell"

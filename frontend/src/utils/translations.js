@@ -19,6 +19,7 @@ export const translations = {
       backToHome: 'Back to ReGebeya',
       browseListings: 'Browse listings',
       home: 'Home',
+      select: 'Select…',
     },
     navbar: {
       categories: 'Categories',
@@ -325,6 +326,7 @@ export const translations = {
       backToHome: 'ወደ ReGebeya ተመለስ',
       browseListings: 'ዝርዝሮችን ያስሱ',
       home: 'መነሻ',
+      select: 'ይምረጡ…',
     },
     navbar: {
       categories: 'ምድቦች',
@@ -631,6 +633,7 @@ export const translations = {
       backToHome: 'ናብ ReGebeya ተመለስ',
       browseListings: 'ዝርዝራት ርአ',
       home: 'መበገሲ',
+      select: 'ምረጽ…',
     },
     navbar: {
       categories: 'ምድባት',
@@ -937,6 +940,7 @@ export const translations = {
       backToHome: 'Gara ReGebeya Deebi\'i',
       browseListings: 'Tarreeffama daawwadhu',
       home: 'Fuula duraa',
+      select: 'Filadhu…',
     },
     navbar: {
       categories: 'Ramaddiiwwan',

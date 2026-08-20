@@ -9,13 +9,24 @@ import { CATEGORY_VISUALS } from '../../utils/categoryIcons.jsx';
 // household-appliances category, which was merged into Furniture &
 // Home and no longer exists).
 const CATEGORY_LINKS = CATEGORY_VISUALS.slice(0, 5).map((c) => ({
-  name: c.name,
+  i18nKey: c.i18nKey,
   slug: c.dbSlug,
 }));
 
-const HELP_LINKS = ['helpCenter', 'howToBuy', 'howToSell', 'paymentSafety', 'contactSupport'];
-const SAFETY_LINKS = ['meetSafePlaces', 'checkBeforeBuy', 'avoidScams', 'reportFraud', 'safetyCenter'];
-const ABOUT_LINKS = ['aboutUs', 'ourMission', 'termsOfUse', 'privacyPolicy'];
+const HELP_LINKS = [
+  { key: 'helpCenter', to: '/help' },
+  { key: 'howToBuy', to: '/help/how-to-buy' },
+  { key: 'howToSell', to: '/help/how-to-sell' },
+  { key: 'paymentSafety', to: '/help/payment-safety' },
+  { key: 'contactSupport', to: '/help/contact' },
+];
+const SAFETY_LINKS = ['meetSafePlaces', 'checkBeforeBuy', 'avoidScams', 'reportFraud'];
+const ABOUT_LINKS = [
+  { key: 'aboutUs', to: '/about' },
+  { key: 'ourMission', to: '/mission' },
+  { key: 'termsOfUse', to: '/terms' },
+  { key: 'privacyPolicy', to: '/privacy' },
+];
 
 const SOCIALS = [
   {
@@ -90,7 +101,7 @@ export default function Footer() {
               {CATEGORY_LINKS.map((c) => (
                 <li key={c.slug}>
                   <Link to={`/category/${c.slug}`} className="hover:text-mustard transition-colors">
-                    {c.name}
+                    {t(`navbar.${c.i18nKey}`)}
                   </Link>
                 </li>
               ))}
@@ -106,9 +117,9 @@ export default function Footer() {
           <div>
             <h4 className="font-display font-bold text-sm text-white mb-4">{t('footer.helpSupport')}</h4>
             <ul className="space-y-2.5 text-sm font-body text-white/60">
-              {HELP_LINKS.map((key) => (
+              {HELP_LINKS.map(({ key, to }) => (
                 <li key={key}>
-                  <a href="#" className="hover:text-mustard transition-colors">{t(`footer.${key}`)}</a>
+                  <Link to={to} className="hover:text-mustard transition-colors">{t(`footer.${key}`)}</Link>
                 </li>
               ))}
             </ul>
@@ -119,9 +130,7 @@ export default function Footer() {
             <h4 className="font-display font-bold text-sm text-white mb-4">{t('footer.safetyTips')}</h4>
             <ul className="space-y-2.5 text-sm font-body text-white/60">
               {SAFETY_LINKS.map((key) => (
-                <li key={key}>
-                  <a href="#" className="hover:text-mustard transition-colors">{t(`footer.${key}`)}</a>
-                </li>
+                <li key={key} className="text-white/60">{t(`footer.${key}`)}</li>
               ))}
             </ul>
           </div>
@@ -130,9 +139,9 @@ export default function Footer() {
           <div>
             <h4 className="font-display font-bold text-sm text-white mb-4">{t('footer.about')}</h4>
             <ul className="space-y-2.5 text-sm font-body text-white/60 mb-6">
-              {ABOUT_LINKS.map((key) => (
+              {ABOUT_LINKS.map(({ key, to }) => (
                 <li key={key}>
-                  <a href="#" className="hover:text-mustard transition-colors">{t(`footer.${key}`)}</a>
+                  <Link to={to} className="hover:text-mustard transition-colors">{t(`footer.${key}`)}</Link>
                 </li>
               ))}
             </ul>

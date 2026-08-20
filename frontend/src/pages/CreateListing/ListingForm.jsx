@@ -4,6 +4,23 @@ import { CONDITIONS } from '../../utils/formatters.js';
 import { Input, Textarea, Select } from '../../components/common/Input.jsx';
 import Button from '../../components/common/Button.jsx';
 import { useLanguage } from '../../hooks/useLanguage.js';
+import { CATEGORY_VISUALS } from '../../utils/categoryIcons.jsx';
+
+// Categories come back from the API with their raw (English) `name`.
+// Every other category list in the app (homepage grid, navbar) shows a
+// translated label by matching the API category to a CATEGORY_VISUALS
+// entry and using its i18nKey — this form just falls back to the raw
+// name if no match is found, so it never breaks for a category the
+// backend adds that isn't in CATEGORY_VISUALS yet.
+function categoryLabel(apiCat, t) {
+  const visual = CATEGORY_VISUALS.find(
+    (v) =>
+      v.dbSlug === apiCat.slug ||
+      apiCat.name.toLowerCase().includes(v.dbSlug.split('-')[0]) ||
+      v.name.toLowerCase() === apiCat.name.toLowerCase()
+  );
+  return visual ? t(`navbar.${visual.i18nKey}`) : apiCat.name;
+}
 
 const MIN_PHOTOS = 1;
 const MAX_PHOTOS = 5;
@@ -185,6 +202,7 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
         <Select
           label={t('createListing.condition')}
           required
+          placeholder={t('common.select')}
           value={form.condition}
           onChange={(e) => update('condition', e.target.value)}
           options={conditionOptions}
@@ -193,9 +211,10 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
       <Select
         label={t('createListing.category')}
         required
+        placeholder={t('common.select')}
         value={form.category_id}
         onChange={(e) => update('category_id', e.target.value)}
-        options={categories.map((c) => ({ value: c.id, label: c.name }))}
+        options={categories.map((c) => ({ value: c.id, label: categoryLabel(c, t) }))}
       />
       <div className="grid grid-cols-2 gap-4">
         <Input label={t('createListing.city')} required value={form.city} onChange={(e) => update('city', e.target.value)} />
