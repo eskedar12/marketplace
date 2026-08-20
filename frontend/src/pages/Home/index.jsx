@@ -281,7 +281,7 @@ export default function Home() {
                   />
                 </div>
                 <span className="font-body font-medium text-base text-ink leading-tight text-center py-4 px-2">
-                  {cat.name}
+                  {t(`navbar.${cat.i18nKey}`)}
                 </span>
               </Link>
             );

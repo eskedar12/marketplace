@@ -198,7 +198,7 @@ export default function Navbar() {
                     <span className={`w-8 h-8 rounded-lg flex items-center justify-center ${cat.bg} ${cat.fg}`}>
                       {cat.icon('w-[18px] h-[18px]')}
                     </span>
-                    <span className="text-sm font-body font-medium text-ink">{cat.name}</span>
+                    <span className="text-sm font-body font-medium text-ink">{t(`navbar.${cat.i18nKey}`)}</span>
                   </Link>
                 ))}
               </div>
