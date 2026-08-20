@@ -296,6 +296,17 @@ export const translations = {
       title: 'Page not found',
       body: "That page doesn't exist.",
     },
+    cities: {
+      addisAbaba: 'Addis Ababa',
+      adama: 'Adama',
+      hawassa: 'Hawassa',
+      bahirDar: 'Bahir Dar',
+      direDawa: 'Dire Dawa',
+      mekelle: 'Mekelle',
+      gondar: 'Gondar',
+      dessie: 'Dessie',
+      jimma: 'Jimma',
+    },
   },
 
   am: {
@@ -590,6 +601,17 @@ export const translations = {
     notFound: {
       title: 'ገጽ አልተገኘም',
       body: 'ያ ገጽ የለም።',
+    },
+    cities: {
+      addisAbaba: 'አዲስ አበባ',
+      adama: 'አዳማ',
+      hawassa: 'ሀዋሳ',
+      bahirDar: 'ባህር ዳር',
+      direDawa: 'ድሬዳዋ',
+      mekelle: 'መቀሌ',
+      gondar: 'ጎንደር',
+      dessie: 'ደሴ',
+      jimma: 'ጅማ',
     },
   },
 
@@ -886,6 +908,17 @@ export const translations = {
       title: 'ገጽ ኣይተረኽበን',
       body: 'እቲ ገጽ የለን።',
     },
+    cities: {
+      addisAbaba: 'ኣዲስ አበባ',
+      adama: 'ኣዳማ',
+      hawassa: 'ሃዋሳ',
+      bahirDar: 'ባህር ዳር',
+      direDawa: 'ድሬዳዋ',
+      mekelle: 'መቐለ',
+      gondar: 'ጎንደር',
+      dessie: 'ደሴ',
+      jimma: 'ጅማ',
+    },
   },
 
   om: {
@@ -1180,6 +1213,17 @@ export const translations = {
     notFound: {
       title: 'Fuulli Hin Argamne',
       body: 'Fuulli sun hin jiru.',
+    },
+    cities: {
+      addisAbaba: 'Finfinnee',
+      adama: 'Adaamaa',
+      hawassa: 'Hawaasaa',
+      bahirDar: 'Bahir Dar',
+      direDawa: 'Dirree Dawaa',
+      mekelle: 'Mekelle',
+      gondar: 'Gondar',
+      dessie: 'Dessie',
+      jimma: 'Jimmaa',
     },
   },
 };

@@ -174,6 +174,7 @@ export default function Home() {
   // ---- Hero theme (background photo, tint, headline) swaps per
   // category so each category "feels" like its own page. ----------
   const heroTheme = getHeroTheme(activeCategory?.dbSlug);
+  const activeCategoryName = activeCategory ? t(`navbar.${activeCategory.i18nKey}`) : '';
   const heroImageUrl =
     heroTheme.image ||
     (activeCategory
@@ -205,7 +206,7 @@ export default function Home() {
           {activeCategory && (
             <span className="inline-flex items-center gap-2 bg-white/15 text-white text-xs font-body font-semibold px-3 py-1.5 rounded-full mb-5 backdrop-blur border border-white/20">
               <span className="w-4 h-4">{activeCategory.icon('w-4 h-4')}</span>
-              {t('home.browsing', { name: activeCategory.name })}
+              {t('home.browsing', { name: activeCategoryName })}
             </span>
           )}
 
@@ -243,7 +244,7 @@ export default function Home() {
               >
                 <option value="">{t('home.allEthiopia')}</option>
                 {CITIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c.value} value={c.value}>{t(`cities.${c.key}`)}</option>
                 ))}
               </select>
             </div>
@@ -293,7 +294,7 @@ export default function Home() {
       <section ref={listingsSectionRef} id="listings" className="max-w-6xl mx-auto px-4 sm:px-6 py-6 scroll-mt-20">
         <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
           <h2 className="font-display font-extrabold text-2xl text-ink">
-            {activeCategory ? activeCategory.name : t('home.recentlyListed')}
+            {activeCategory ? activeCategoryName : t('home.recentlyListed')}
           </h2>
 
           {activeCategory ? (
@@ -316,7 +317,7 @@ export default function Home() {
         <ListingGrid
           listings={activeCategory ? categoryItems : recent}
           loading={activeCategory ? false : recentLoading}
-          emptyTitle={activeCategory ? t('home.noListingsInCategory', { name: activeCategory.name }) : undefined}
+          emptyTitle={activeCategory ? t('home.noListingsInCategory', { name: activeCategoryName }) : undefined}
         />
 
         {activeCategory && (
@@ -324,8 +325,8 @@ export default function Home() {
             <div ref={sentinelRef} className="h-1" />
             <p className="text-center text-xs text-ink/40 font-body py-8">
               {hasMoreCategoryItems
-                ? t('home.loadingMore', { name: activeCategory.name.toLowerCase() })
-                : t('home.reachedEnd', { name: activeCategory.name.toLowerCase() })}
+                ? t('home.loadingMore', { name: activeCategoryName.toLowerCase() })
+                : t('home.reachedEnd', { name: activeCategoryName.toLowerCase() })}
             </p>
           </>
         )}

@@ -44,7 +44,7 @@ export default function FilterBar({ filters, onChange }) {
         : t('listings.rangeAmount', { min: r.min.toLocaleString('en-US'), max: r.max.toLocaleString('en-US') }),
   }));
 
-  const cityOptions = CITIES.map((city) => ({ value: city, label: city }));
+  const cityOptions = CITIES.map((city) => ({ value: city.value, label: t(`cities.${city.key}`) }));
 
   // The price filter is a single "bucket" dropdown (e.g. "5,000 –
   // 20,000 ETB") instead of two free-typed min/max fields. Its value
