@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ordersApi } from '../../api/orders.api.js';
 import { formatPrice, timeAgo } from '../../utils/formatters.js';
 import Spinner from '../../components/common/Spinner.jsx';
+import { useLanguage } from '../../hooks/useLanguage.js';
 
 const STATUS_STYLES = {
   paid: 'bg-emerald-50 text-emerald-700',
@@ -12,6 +13,7 @@ const STATUS_STYLES = {
 };
 
 export default function Orders() {
+  const { t } = useLanguage();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -26,7 +28,7 @@ export default function Orders() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-      <h1 className="text-2xl font-display font-extrabold text-ink mb-6">Your orders</h1>
+      <h1 className="text-2xl font-display font-extrabold text-ink mb-6">{t('orders.title')}</h1>
 
       {error && <p className="text-clay text-sm font-body mb-4">{error}</p>}
 
@@ -34,9 +36,9 @@ export default function Orders() {
         <Spinner />
       ) : orders.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-line rounded-2xl">
-          <p className="font-display font-bold text-lg text-ink">No orders yet</p>
+          <p className="font-display font-bold text-lg text-ink">{t('orders.empty')}</p>
           <Link to="/" className="inline-block mt-4 text-sm font-display font-bold text-juniper hover:text-mustard">
-            Browse listings
+            {t('common.browseListings')}
           </Link>
         </div>
       ) : (
@@ -48,7 +50,7 @@ export default function Orders() {
                   <img src={o.image_url} alt={o.listing_title} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-ink/20 text-[10px] font-body uppercase">
-                    No photo
+                    {t('common.noPhoto')}
                   </div>
                 )}
               </Link>
@@ -57,7 +59,7 @@ export default function Orders() {
                   {o.listing_title}
                 </Link>
                 <p className="text-xs text-ink/50 font-body mt-0.5">
-                  Sold by {o.seller_name} · {timeAgo(o.created_at)}
+                  {t('orders.soldByDate', { name: o.seller_name, time: timeAgo(o.created_at, t) })}
                 </p>
               </div>
               <div className="text-right flex-shrink-0">

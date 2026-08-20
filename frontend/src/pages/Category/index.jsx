@@ -7,6 +7,7 @@ import FilterBar from '../../components/listings/FilterBar.jsx';
 import ListingGrid from '../../components/listings/ListingGrid.jsx';
 import Spinner from '../../components/common/Spinner.jsx';
 import Button from '../../components/common/Button.jsx';
+import { useLanguage } from '../../hooks/useLanguage.js';
 
 // Dedicated browse page for a single category, linked from the
 // CategoryNav dropdown (and reachable directly at /category/:slug).
@@ -16,6 +17,7 @@ import Button from '../../components/common/Button.jsx';
 export default function CategoryPage() {
   const { slug } = useParams();
   const { filters, updateFilter, items, total, loading, error } = useListings();
+  const { t } = useLanguage();
 
   const [category, setCategory] = useState(null);
   const [categoryLoading, setCategoryLoading] = useState(true);
@@ -45,16 +47,16 @@ export default function CategoryPage() {
   const totalPages = Math.max(1, Math.ceil(total / filters.limit));
 
   if (categoryLoading) {
-    return <Spinner label="Loading category…" className="py-24 justify-center" />;
+    return <Spinner label={t('listings.loadingListings')} className="py-24 justify-center" />;
   }
 
   if (notFound || !category) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-24 text-center">
-        <h1 className="font-display font-700 text-2xl">Category not found</h1>
-        <p className="text-ink/50 font-body mt-2">That category doesn't exist.</p>
+        <h1 className="font-display font-700 text-2xl">{t('category.notFound')}</h1>
+        <p className="text-ink/50 font-body mt-2">{t('category.notFoundHint')}</p>
         <Link to="/" className="inline-block mt-6 text-mustard font-body font-semibold hover:underline">
-          Back to home
+          {t('category.backToHome')}
         </Link>
       </div>
     );
@@ -64,7 +66,7 @@ export default function CategoryPage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs font-body text-ink/50 mb-3">
-        <Link to="/" className="hover:text-mustard transition-colors">Home</Link>
+        <Link to="/" className="hover:text-mustard transition-colors">{t('common.home')}</Link>
         <span>/</span>
         {category.parent && (
           <>
@@ -78,7 +80,7 @@ export default function CategoryPage() {
       </nav>
 
       <h1 className="font-display font-extrabold text-2xl md:text-3xl text-ink">{category.name}</h1>
-      <p className="text-xs font-body text-ink/50 mt-1">Showing {total} active listings</p>
+      <p className="text-xs font-body text-ink/50 mt-1">{t('category.showingListings', { total })}</p>
 
       {/* Subcategory pill filters — only shown on a parent category page */}
       {category.subcategories.length > 0 && (
@@ -91,7 +93,7 @@ export default function CategoryPage() {
                 : 'bg-white border border-line text-ink/70 hover:border-mustard/50'
             }`}
           >
-            All {category.name}
+            {t('category.all', { name: category.name })}
           </button>
           {category.subcategories.map((sub) => (
             <button
@@ -110,7 +112,7 @@ export default function CategoryPage() {
       )}
 
       <div className="flex flex-col lg:flex-row gap-6 mt-8">
-        <Sidebar title="Filters" className="w-full lg:w-64 flex-shrink-0">
+        <Sidebar title={t('listings.filters')} className="w-full lg:w-64 flex-shrink-0">
           <FilterBar filters={filters} onChange={updateFilter} />
         </Sidebar>
 
@@ -120,8 +122,8 @@ export default function CategoryPage() {
           <ListingGrid
             listings={items}
             loading={loading}
-            emptyTitle={`No listings in ${category.name} yet`}
-            emptyHint="Check back soon, or try a subcategory above."
+            emptyTitle={t('category.noListingsYet', { name: category.name })}
+            emptyHint={t('category.checkBackSoon')}
           />
 
           {!loading && totalPages > 1 && (
@@ -132,10 +134,10 @@ export default function CategoryPage() {
                 onClick={() => updateFilter('page', filters.page - 1)}
                 className="rounded-lg hover:bg-slate-50 border-slate-200"
               >
-                Prev
+                {t('listings.prev')}
               </Button>
               <span className="text-ink/60 font-medium">
-                Page {filters.page} of {totalPages}
+                {t('listings.pageOf', { page: filters.page, total: totalPages })}
               </span>
               <Button
                 variant="outline"
@@ -143,7 +145,7 @@ export default function CategoryPage() {
                 onClick={() => updateFilter('page', filters.page + 1)}
                 className="rounded-lg hover:bg-slate-50 border-slate-200"
               >
-                Next
+                {t('listings.next')}
               </Button>
             </div>
           )}

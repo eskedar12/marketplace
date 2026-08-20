@@ -4,10 +4,12 @@ import { listingsApi } from '../../api/listings.api.js';
 import ListingForm from '../CreateListing/ListingForm.jsx';
 import Button from '../../components/common/Button.jsx';
 import Spinner from '../../components/common/Spinner.jsx';
+import { useLanguage } from '../../hooks/useLanguage.js';
 
 export default function EditListing() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [listing, setListing] = useState(null);
   const [error, setError] = useState('');
 
@@ -24,7 +26,7 @@ export default function EditListing() {
   }
 
   async function handleRemove() {
-    if (!confirm('Remove this listing? Buyers will no longer be able to find it.')) return;
+    if (!confirm(t('createListing.removeConfirm'))) return;
     await listingsApi.remove(id);
     navigate('/my-listings');
   }
@@ -34,10 +36,10 @@ export default function EditListing() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-      <h1 className="text-2xl font-700 mb-6">Edit listing</h1>
-      <ListingForm initial={listing} onSubmit={handleSubmit} submitLabel="Save changes" />
+      <h1 className="text-2xl font-700 mb-6">{t('createListing.edit')}</h1>
+      <ListingForm initial={listing} onSubmit={handleSubmit} submitLabel={t('createListing.saveChanges')} />
       <Button variant="ghost" onClick={handleRemove} className="mt-6 !px-0 text-clay underline">
-        Remove this listing
+        {t('createListing.removeListing')}
       </Button>
     </div>
   );

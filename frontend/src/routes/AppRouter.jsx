@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute.jsx';
+import { useLanguage } from '../hooks/useLanguage.js';
 
 import Home from '../pages/Home/index.jsx';
 import Listings from '../pages/Listings/index.jsx';
@@ -131,10 +132,11 @@ export default function AppRouter() {
 }
 
 function NotFound() {
+  const { t } = useLanguage();
   return (
     <div className="max-w-2xl mx-auto px-4 py-24 text-center">
-      <h1 className="text-2xl font-700">Page not found</h1>
-      <p className="text-ink/50 font-body mt-2">That page doesn't exist.</p>
+      <h1 className="text-2xl font-700">{t('notFound.title')}</h1>
+      <p className="text-ink/50 font-body mt-2">{t('notFound.body')}</p>
     </div>
   );
 }

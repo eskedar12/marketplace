@@ -5,9 +5,11 @@ import { ordersApi } from '../../api/orders.api.js';
 import { formatPrice } from '../../utils/formatters.js';
 import Button from '../../components/common/Button.jsx';
 import Spinner from '../../components/common/Spinner.jsx';
+import { useLanguage } from '../../hooks/useLanguage.js';
 
 export default function Cart() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -54,15 +56,15 @@ export default function Cart() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-      <h1 className="text-2xl font-display font-extrabold text-ink mb-6">Your cart</h1>
+      <h1 className="text-2xl font-display font-extrabold text-ink mb-6">{t('cart.title')}</h1>
 
       {error && <p className="text-clay text-sm font-body mb-4">{error}</p>}
 
       {items.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-line rounded-2xl">
-          <p className="font-display font-bold text-lg text-ink">Your cart is empty</p>
+          <p className="font-display font-bold text-lg text-ink">{t('cart.empty')}</p>
           <Link to="/" className="inline-block mt-4 text-sm font-display font-bold text-juniper hover:text-mustard">
-            Browse listings
+            {t('common.browseListings')}
           </Link>
         </div>
       ) : (
@@ -78,7 +80,7 @@ export default function Cart() {
                     <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-ink/20 text-[10px] font-body uppercase">
-                      No photo
+                      {t('common.noPhoto')}
                     </div>
                   )}
                 </Link>
@@ -86,9 +88,9 @@ export default function Cart() {
                   <Link to={`/listings/${item.listing_id}`} className="font-display font-600 text-sm text-ink hover:text-mustard truncate block">
                     {item.title}
                   </Link>
-                  <p className="text-xs text-ink/50 font-body mt-0.5">Sold by {item.seller_name}</p>
+                  <p className="text-xs text-ink/50 font-body mt-0.5">{t('cart.soldBy', { name: item.seller_name })}</p>
                   {item.status !== 'active' ? (
-                    <p className="text-xs text-clay font-body mt-0.5">No longer available</p>
+                    <p className="text-xs text-clay font-body mt-0.5">{t('cart.noLongerAvailable')}</p>
                   ) : (
                     <p className="font-display font-bold text-sm text-mustard mt-0.5">{formatPrice(item.price)}</p>
                   )}
@@ -98,7 +100,7 @@ export default function Cart() {
                   disabled={removingId === item.listing_id}
                   className="text-xs font-body text-ink/40 hover:text-clay flex-shrink-0"
                 >
-                  Remove
+                  {t('cart.remove')}
                 </button>
               </div>
             ))}
@@ -107,12 +109,12 @@ export default function Cart() {
           <div className="border-t border-line mt-6 pt-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-body text-ink/60">
-                Total {purchasable.length < items.length && `(${purchasable.length} of ${items.length} available)`}
+                {t('cart.total')} {purchasable.length < items.length && t('cart.availableCount', { available: purchasable.length, total: items.length })}
               </p>
               <p className="font-display font-bold text-xl text-ink">{formatPrice(total)}</p>
             </div>
             <Button variant="accent" onClick={checkout} disabled={checkingOut || purchasable.length === 0} className="rounded-xl px-6">
-              {checkingOut ? 'Redirecting…' : '🛒 Checkout'}
+              {checkingOut ? t('cart.redirecting') : t('cart.checkout')}
             </Button>
           </div>
         </>

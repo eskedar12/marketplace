@@ -3,28 +3,30 @@ import { Link, useNavigate } from 'react-router-dom';
 import { formatPrice } from '../../utils/formatters.js';
 import { favoritesApi } from '../../api/listings.api.js';
 import { useAuth } from '../../hooks/useAuth.js';
+import { useLanguage } from '../../hooks/useLanguage.js';
 
 // "Used"-style badge shown on each card. Brand new / lightly used
 // read as a light, trustworthy green; fair condition reads as an
 // amber "Used" pill — matching the two badge colors in the reference
 // design.
-function conditionBadge(condition) {
+function conditionBadge(condition, t) {
   if (condition === 'fair_condition') {
-    return { label: 'Used', className: 'bg-amber-50 text-amber-700' };
+    return { label: t('listings.used'), className: 'bg-amber-50 text-amber-700' };
   }
   if (condition === 'brand_new') {
-    return { label: 'Brand New', className: 'bg-emerald-50 text-emerald-700' };
+    return { label: t('listings.brandNew'), className: 'bg-emerald-50 text-emerald-700' };
   }
-  return { label: 'Lightly Used', className: 'bg-emerald-50 text-emerald-700' };
+  return { label: t('listings.lightlyUsed'), className: 'bg-emerald-50 text-emerald-700' };
 }
 
 export default function ListingCard({ listing }) {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [favorited, setFavorited] = useState(Boolean(listing.is_favorited));
   const [busy, setBusy] = useState(false);
 
-  const badge = conditionBadge(listing.condition);
+  const badge = conditionBadge(listing.condition, t);
 
   function toggleFavorite(e) {
     e.preventDefault();
@@ -55,13 +57,13 @@ export default function ListingCard({ listing }) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-ink/30 font-body text-xs uppercase tracking-widest">
-            No photo
+            {t('common.noPhoto')}
           </div>
         )}
 
         <button
           onClick={toggleFavorite}
-          aria-label={favorited ? 'Remove from favorites' : 'Add to favorites'}
+          aria-label={favorited ? t('listings.removeFromFavorites') : t('listings.addToFavorites')}
           className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow-sm hover:scale-105 transition-transform"
         >
           <svg

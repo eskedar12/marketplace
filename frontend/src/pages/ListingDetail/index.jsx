@@ -9,11 +9,13 @@ import { conditionLabel, formatPrice, timeAgo } from '../../utils/formatters.js'
 import Button from '../../components/common/Button.jsx';
 import { Textarea } from '../../components/common/Input.jsx';
 import Spinner from '../../components/common/Spinner.jsx';
+import { useLanguage } from '../../hooks/useLanguage.js';
 
 export default function ListingDetail() {
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [listing, setListing] = useState(null);
   const [error, setError] = useState('');
@@ -133,7 +135,7 @@ export default function ListingDetail() {
             <img src={images[activeImage]?.image_url} alt={listing.title} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-ink/30 font-body text-xs uppercase tracking-widest">
-              No photo
+              {t('common.noPhoto')}
             </div>
           )}
         </div>
@@ -155,13 +157,13 @@ export default function ListingDetail() {
       <div className="md:col-span-2 space-y-5">
         <div>
           <span className="inline-block text-[11px] font-medium px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700">
-            {conditionLabel(listing.condition)}
+            {conditionLabel(listing.condition, t)}
           </span>
           <h1 className="text-2xl font-700 mt-2 leading-snug font-display text-ink">{listing.title}</h1>
           <p className="font-display font-bold text-2xl text-mustard mt-2">{formatPrice(listing.price)}</p>
           <p className="text-sm text-ink/50 font-body mt-1">
             {listing.neighborhood ? `${listing.neighborhood}, ` : ''}
-            {listing.city} · Posted {timeAgo(listing.created_at)}
+            {listing.city} · {t('listingDetail.postedTimeAgo', { time: timeAgo(listing.created_at, t) })}
           </p>
         </div>
 
@@ -169,7 +171,7 @@ export default function ListingDetail() {
 
         {!isOwnListing && (
           <div className="border border-line rounded-2xl p-4 space-y-3 bg-white">
-            <p className="font-display font-600 text-sm">Contact the seller</p>
+            <p className="font-display font-600 text-sm">{t('listingDetail.contactSeller')}</p>
             <div className="flex flex-wrap gap-2">
               {listing.seller_allows_calls && (
                 <Button
@@ -177,7 +179,7 @@ export default function ListingDetail() {
                   disabled={callingSeller || isSold}
                   className="flex-1 text-center rounded-xl whitespace-nowrap"
                 >
-                  📞 {callingSeller ? 'Calling…' : 'Call'}
+                  📞 {callingSeller ? t('listingDetail.calling') : t('listingDetail.call')}
                 </Button>
               )}
               <Button
@@ -186,7 +188,7 @@ export default function ListingDetail() {
                 disabled={contacting}
                 className="flex-1 text-center rounded-xl whitespace-nowrap"
               >
-                💬 {contacting ? 'Opening…' : 'Message'}
+                💬 {contacting ? t('listingDetail.opening') : t('listingDetail.message')}
               </Button>
               <Button
                 variant="outline"
@@ -194,7 +196,7 @@ export default function ListingDetail() {
                 disabled={updatingCart || isSold}
                 className="flex-1 text-center rounded-xl whitespace-nowrap"
               >
-                🛒 {inCart ? 'In Cart' : 'Add to Cart'}
+                🛒 {inCart ? t('listingDetail.inCart') : t('listingDetail.addToCart')}
               </Button>
             </div>
 
@@ -203,35 +205,37 @@ export default function ListingDetail() {
               disabled={buyingNow || isSold}
               className="w-full text-center rounded-xl bg-juniper text-white hover:bg-juniper-dark py-3 text-base"
             >
-              {isSold ? 'Sold' : `🛒 ${buyingNow ? 'Redirecting…' : `Buy Now - ${formatPrice(listing.price)}`}`}
+              {isSold
+                ? t('listingDetail.sold')
+                : `🛒 ${buyingNow ? t('listingDetail.redirecting') : t('listingDetail.buyNow', { price: formatPrice(listing.price) })}`}
             </Button>
           </div>
         )}
 
         {isOwnListing && (
           <Button as={Link} to={`/listings/${listing.id}/edit`} variant="outline" className="rounded-xl">
-            Edit this listing
+            {t('listingDetail.editListing')}
           </Button>
         )}
 
         <div>
           {reportSent ? (
-            <p className="text-sm text-ink/50 font-body">Thanks — this listing has been flagged for review.</p>
+            <p className="text-sm text-ink/50 font-body">{t('listingDetail.reportSent')}</p>
           ) : showReport ? (
             <form onSubmit={submitReport} className="space-y-2">
               <Textarea
                 required
                 rows={2}
-                placeholder="Why are you reporting this listing?"
+                placeholder={t('listingDetail.reportPlaceholder')}
                 value={reportReason}
                 onChange={(e) => setReportReason(e.target.value)}
               />
               <div className="flex gap-2">
                 <Button type="submit" variant="danger">
-                  Submit report
+                  {t('listingDetail.submitReport')}
                 </Button>
                 <Button type="button" variant="ghost" onClick={() => setShowReport(false)}>
-                  Cancel
+                  {t('listingDetail.cancel')}
                 </Button>
               </div>
             </form>
@@ -241,7 +245,7 @@ export default function ListingDetail() {
                 onClick={() => (user ? setShowReport(true) : navigate('/login'))}
                 className="text-xs font-body text-ink/40 hover:text-clay underline"
               >
-                Report this listing
+                {t('listingDetail.reportListing')}
               </button>
             )
           )}

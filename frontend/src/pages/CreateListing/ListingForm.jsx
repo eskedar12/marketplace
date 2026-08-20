@@ -3,11 +3,13 @@ import { categoriesApi, listingsApi } from '../../api/listings.api.js';
 import { CONDITIONS } from '../../utils/formatters.js';
 import { Input, Textarea, Select } from '../../components/common/Input.jsx';
 import Button from '../../components/common/Button.jsx';
+import { useLanguage } from '../../hooks/useLanguage.js';
 
 const MIN_PHOTOS = 1;
 const MAX_PHOTOS = 5;
 
 export default function ListingForm({ initial, onSubmit, submitLabel }) {
+  const { t } = useLanguage();
   const [categories, setCategories] = useState([]);
   const [form, setForm] = useState(
     initial || {
@@ -29,6 +31,16 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [uploadingCount, setUploadingCount] = useState(0);
+
+  const conditionOptions = CONDITIONS.map((c) => ({
+    value: c.value,
+    label:
+      c.value === 'brand_new'
+        ? t('listings.brandNew')
+        : c.value === 'lightly_used'
+        ? t('listings.lightlyUsed')
+        : t('listings.used'),
+  }));
 
   useEffect(() => {
     categoriesApi.getAll().then((res) => setCategories(res.data)).catch(() => {});
@@ -65,7 +77,7 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
     setError('');
 
     if (photos.length < MIN_PHOTOS) {
-      setError(`Add at least ${MIN_PHOTOS} photo of the item.`);
+      setError(t('createListing.minPhotosError', { min: MIN_PHOTOS }));
       return;
     }
 
@@ -99,7 +111,7 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
     <form onSubmit={handleSubmit} className="space-y-4 max-w-lg">
       <div>
         <label className="block text-sm font-body font-medium text-ink mb-1.5">
-          Photos <span className="text-ink/40 font-normal">({photos.length}/{MAX_PHOTOS}, at least {MIN_PHOTOS})</span>
+          {t('createListing.photos')} <span className="text-ink/40 font-normal">{t('createListing.photosCount', { count: photos.length, max: MAX_PHOTOS, min: MIN_PHOTOS })}</span>
         </label>
 
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-3">
@@ -112,14 +124,14 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
               />
               {idx === 0 && (
                 <span className="absolute top-1 left-1 bg-ink/70 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
-                  Cover
+                  {t('createListing.cover')}
                 </span>
               )}
               <button
                 type="button"
                 onClick={() => removePhoto(idx)}
                 className="absolute top-1 right-1 bg-black/60 hover:bg-clay text-white rounded-full w-5 h-5 flex items-center justify-center text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity"
-                aria-label="Remove photo"
+                aria-label={t('createListing.removePhoto')}
               >
                 ×
               </button>
@@ -131,37 +143,37 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
               <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-              <span className="text-xs font-body">Add</span>
+              <span className="text-xs font-body">{t('createListing.add')}</span>
               <input type="file" accept="image/png,image/jpeg" multiple className="hidden" onChange={handleFilesPicked} />
             </label>
           )}
         </div>
 
         <p className="text-xs text-ink/50 font-body">
-          Tip: include the front, back, and a close-up of any wear so buyers know exactly what they're getting.
+          {t('createListing.photoTip')}
         </p>
       </div>
 
       <Input
-        label="Title"
+        label={t('createListing.titleLabel')}
         required
         maxLength={200}
-        placeholder="e.g. iPhone 13 Pro, 128GB"
+        placeholder={t('createListing.titlePlaceholder')}
         value={form.title}
         onChange={(e) => update('title', e.target.value)}
       />
       <Textarea
-        label="Description"
+        label={t('createListing.description')}
         required
         rows={4}
         maxLength={2000}
-        placeholder="Condition details, why you're selling, anything a buyer should know"
+        placeholder={t('createListing.descriptionPlaceholder')}
         value={form.description}
         onChange={(e) => update('description', e.target.value)}
       />
       <div className="grid grid-cols-2 gap-4">
         <Input
-          label="Price (ETB)"
+          label={t('createListing.price')}
           type="number"
           required
           min="0"
@@ -171,24 +183,24 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
           onChange={(e) => update('price', e.target.value)}
         />
         <Select
-          label="Condition"
+          label={t('createListing.condition')}
           required
           value={form.condition}
           onChange={(e) => update('condition', e.target.value)}
-          options={CONDITIONS}
+          options={conditionOptions}
         />
       </div>
       <Select
-        label="Category"
+        label={t('createListing.category')}
         required
         value={form.category_id}
         onChange={(e) => update('category_id', e.target.value)}
         options={categories.map((c) => ({ value: c.id, label: c.name }))}
       />
       <div className="grid grid-cols-2 gap-4">
-        <Input label="City" required value={form.city} onChange={(e) => update('city', e.target.value)} />
+        <Input label={t('createListing.city')} required value={form.city} onChange={(e) => update('city', e.target.value)} />
         <Input
-          label="Neighborhood"
+          label={t('createListing.neighborhood')}
           value={form.neighborhood}
           onChange={(e) => update('neighborhood', e.target.value)}
         />
@@ -199,8 +211,8 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
       <Button type="submit" disabled={submitting}>
         {submitting
           ? uploadingCount > 0
-            ? `Uploading ${uploadingCount} photo${uploadingCount > 1 ? 's' : ''}…`
-            : 'Saving…'
+            ? t('createListing.uploadingPhotos', { count: uploadingCount, plural: uploadingCount > 1 ? 's' : '' })
+            : t('common.saving')
           : submitLabel}
       </Button>
     </form>

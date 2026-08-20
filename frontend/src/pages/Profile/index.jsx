@@ -4,9 +4,11 @@ import { useAuth } from '../../hooks/useAuth.js';
 import { Input } from '../../components/common/Input.jsx';
 import Button from '../../components/common/Button.jsx';
 import Spinner from '../../components/common/Spinner.jsx';
+import { useLanguage } from '../../hooks/useLanguage.js';
 
 export default function Profile() {
   const { updateStoredUser } = useAuth();
+  const { t } = useLanguage();
   const [profile, setProfile] = useState(null);
   const [form, setForm] = useState(null);
   const [error, setError] = useState('');
@@ -75,18 +77,18 @@ export default function Profile() {
 
   return (
     <div className="max-w-md mx-auto px-4 sm:px-6 py-8">
-      <h1 className="text-2xl font-700 mb-1">Your profile</h1>
+      <h1 className="text-2xl font-700 mb-1">{t('profile.yourProfile')}</h1>
       {profile.role === 'seller' && (
         <p className="text-ink/60 text-sm font-body mb-6">
-          Rating: {Number(profile.rating_avg || 0).toFixed(1)} ★ ({profile.rating_count || 0} reviews)
-          {profile.is_verified && <span className="ml-2 text-juniper font-600">Verified</span>}
+          {t('profile.rating', { avg: Number(profile.rating_avg || 0).toFixed(1), count: profile.rating_count || 0 })}
+          {profile.is_verified && <span className="ml-2 text-juniper font-600">{t('profile.verified')}</span>}
         </p>
       )}
 
       <div className="flex items-center gap-4 mb-6">
         <div className="relative w-20 h-20 rounded-full overflow-hidden bg-line flex-shrink-0">
           {form.profile_image ? (
-            <img src={form.profile_image} alt="Your profile" className="w-full h-full object-cover" />
+            <img src={form.profile_image} alt={t('profile.yourProfile')} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-ink/30 font-display font-bold text-2xl">
               {form.name?.[0]?.toUpperCase()}
@@ -99,7 +101,7 @@ export default function Profile() {
           )}
         </div>
         <label className="text-sm font-display font-bold text-mustard hover:text-mustard-dark cursor-pointer">
-          Change photo
+          {t('profile.changePhoto')}
           <input
             type="file"
             accept="image/png,image/jpeg"
@@ -111,12 +113,12 @@ export default function Profile() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <Input label="Full name" required value={form.name} onChange={(e) => update('name', e.target.value)} />
-        <Input label="Email" value={form.email} disabled className="opacity-60" />
-        <Input label="Phone" required value={form.phone} onChange={(e) => update('phone', e.target.value)} />
-        <Input label="City" required value={form.city} onChange={(e) => update('city', e.target.value)} />
+        <Input label={t('profile.fullName')} required value={form.name} onChange={(e) => update('name', e.target.value)} />
+        <Input label={t('profile.email')} value={form.email} disabled className="opacity-60" />
+        <Input label={t('profile.phone')} required value={form.phone} onChange={(e) => update('phone', e.target.value)} />
+        <Input label={t('profile.city')} required value={form.city} onChange={(e) => update('city', e.target.value)} />
         <Input
-          label="Neighborhood"
+          label={t('profile.neighborhood')}
           value={form.neighborhood || ''}
           onChange={(e) => update('neighborhood', e.target.value)}
         />
@@ -130,19 +132,19 @@ export default function Profile() {
               className="mt-0.5 w-4 h-4 accent-mustard"
             />
             <span>
-              <span className="block text-sm font-body text-ink/80">Allow buyers to call me</span>
+              <span className="block text-sm font-body text-ink/80">{t('profile.allowCalls')}</span>
               <span className="block text-xs text-ink/40 font-body">
-                Shows a Call Seller button on your listings. Your number is never shown as text — buyers only get it when they tap to call.
+                {t('profile.allowCallsHint')}
               </span>
             </span>
           </label>
         )}
 
         {error && <p className="text-clay text-sm font-body">{error}</p>}
-        {saved && <p className="text-juniper text-sm font-body">Saved.</p>}
+        {saved && <p className="text-juniper text-sm font-body">{t('profile.saved')}</p>}
 
         <Button type="submit" disabled={saving}>
-          {saving ? 'Saving…' : 'Save changes'}
+          {saving ? t('common.saving') : t('profile.saveChanges')}
         </Button>
       </form>
     </div>

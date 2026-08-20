@@ -3,11 +3,13 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
 import { Input } from '../../components/common/Input.jsx';
 import Button from '../../components/common/Button.jsx';
+import { useLanguage } from '../../hooks/useLanguage.js';
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useLanguage();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -28,17 +30,17 @@ export default function Login() {
 
   return (
     <div className="max-w-sm mx-auto px-4 py-16">
-      <h1 className="text-2xl font-700 mb-6">Log in</h1>
+      <h1 className="text-2xl font-700 mb-6">{t('auth.login')}</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
-          label="Email"
+          label={t('auth.email')}
           type="email"
           required
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
         <Input
-          label="Password"
+          label={t('auth.password')}
           type="password"
           required
           value={form.password}
@@ -46,13 +48,13 @@ export default function Login() {
         />
         {error && <p className="text-clay text-sm">{error}</p>}
         <Button type="submit" disabled={submitting} className="w-full">
-          {submitting ? 'Logging in…' : 'Log in'}
+          {submitting ? t('auth.loggingIn') : t('auth.login')}
         </Button>
       </form>
       <p className="text-sm text-ink/60 mt-4 font-body">
-        No account yet?{' '}
+        {t('auth.noAccountYet')}{' '}
         <Link to="/register" className="text-juniper font-600">
-          Sign up
+          {t('auth.signUp')}
         </Link>
       </p>
     </div>

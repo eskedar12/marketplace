@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { listingsApi, categoriesApi } from '../../api/listings.api.js';
 import ListingGrid from '../../components/listings/ListingGrid.jsx';
+import { useLanguage } from '../../hooks/useLanguage.js';
 import { CATEGORY_VISUALS } from '../../utils/categoryIcons.jsx';
 import { CITIES } from '../../utils/constants.js';
 import { getHeroTheme } from '../../utils/heroThemes.js';
@@ -24,8 +25,8 @@ const DEFAULT_HERO_IMAGE =
 
 const WHY_REGEBEYA = [
   {
-    title: 'Safe Marketplace',
-    body: 'Buy and sell with confidence.',
+    titleKey: 'safeMarketplaceTitle',
+    bodyKey: 'safeMarketplaceBody',
     bg: 'bg-emerald-50',
     iconBg: 'bg-emerald-500',
     icon: (
@@ -36,8 +37,8 @@ const WHY_REGEBEYA = [
     ),
   },
   {
-    title: 'Local Listings',
-    body: 'Find items near you.',
+    titleKey: 'localListingsTitle',
+    bodyKey: 'localListingsBody',
     bg: 'bg-orange-50',
     iconBg: 'bg-mustard',
     icon: (
@@ -48,8 +49,8 @@ const WHY_REGEBEYA = [
     ),
   },
   {
-    title: 'Easy Communication',
-    body: 'Connect directly with sellers.',
+    titleKey: 'easyCommTitle',
+    bodyKey: 'easyCommBody',
     bg: 'bg-blue-50',
     iconBg: 'bg-blue-500',
     icon: (
@@ -59,8 +60,8 @@ const WHY_REGEBEYA = [
     ),
   },
   {
-    title: 'Trusted Sellers',
-    body: 'Ratings help you buy safely.',
+    titleKey: 'trustedSellersTitle',
+    bodyKey: 'trustedSellersBody',
     bg: 'bg-amber-50',
     iconBg: 'bg-amber-400',
     icon: (
@@ -73,6 +74,7 @@ const WHY_REGEBEYA = [
 
 export default function Home() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [query, setQuery] = useState('');
   const [city, setCity] = useState('');
 
@@ -203,12 +205,13 @@ export default function Home() {
           {activeCategory && (
             <span className="inline-flex items-center gap-2 bg-white/15 text-white text-xs font-body font-semibold px-3 py-1.5 rounded-full mb-5 backdrop-blur border border-white/20">
               <span className="w-4 h-4">{activeCategory.icon('w-4 h-4')}</span>
-              Browsing {activeCategory.name}
+              {t('home.browsing', { name: activeCategory.name })}
             </span>
           )}
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight mb-4 font-display drop-shadow-lg">
-            Quality <span className="text-mustard">finds</span>, affordable <span className="text-mustard">prices</span>, all in one place.
+            {t('home.heroQuality')} <span className="text-mustard">{t('home.heroFinds')}</span>, {t('home.heroAffordable')}{' '}
+            <span className="text-mustard">{t('home.heroPrices')}</span>, {t('home.heroAllInOnePlace')}
           </h1>
 
           <form
@@ -221,7 +224,7 @@ export default function Home() {
               </svg>
               <input
                 type="text"
-                placeholder="Search for anything..."
+                placeholder={t('home.searchPlaceholder')}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="w-full bg-transparent text-sm text-ink font-body focus:outline-none placeholder-ink/40"
@@ -238,7 +241,7 @@ export default function Home() {
                 onChange={(e) => setCity(e.target.value)}
                 className="bg-transparent text-sm font-medium text-ink font-body focus:outline-none cursor-pointer pr-2"
               >
-                <option value="">All Ethiopia</option>
+                <option value="">{t('home.allEthiopia')}</option>
                 {CITIES.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
@@ -249,7 +252,7 @@ export default function Home() {
               type="submit"
               className="bg-mustard hover:bg-mustard-dark text-white font-display font-bold text-sm px-8 py-3 rounded-xl md:rounded-full transition-colors"
             >
-              Search
+              {t('home.search')}
             </button>
           </form>
         </div>
@@ -257,7 +260,7 @@ export default function Home() {
 
       {/* 2. Browse by Category */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
-        <h2 className="font-display font-extrabold text-2xl text-ink mb-8 text-center">Browse by Category</h2>
+        <h2 className="font-display font-extrabold text-2xl text-ink mb-8 text-center">{t('home.browseByCategory')}</h2>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
           {CATEGORY_VISUALS.map((cat) => {
@@ -290,7 +293,7 @@ export default function Home() {
       <section ref={listingsSectionRef} id="listings" className="max-w-6xl mx-auto px-4 sm:px-6 py-6 scroll-mt-20">
         <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
           <h2 className="font-display font-extrabold text-2xl text-ink">
-            {activeCategory ? activeCategory.name : 'Recently Listed'}
+            {activeCategory ? activeCategory.name : t('home.recentlyListed')}
           </h2>
 
           {activeCategory ? (
@@ -301,11 +304,11 @@ export default function Home() {
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              Clear filter
+              {t('home.clearFilter')}
             </button>
           ) : (
             <Link to="/listings" className="text-sm font-body font-semibold text-mustard hover:text-mustard-dark transition-colors">
-              View All &rarr;
+              {t('home.viewAll')}
             </Link>
           )}
         </div>
@@ -313,7 +316,7 @@ export default function Home() {
         <ListingGrid
           listings={activeCategory ? categoryItems : recent}
           loading={activeCategory ? false : recentLoading}
-          emptyTitle={activeCategory ? `No listings in ${activeCategory.name} yet` : undefined}
+          emptyTitle={activeCategory ? t('home.noListingsInCategory', { name: activeCategory.name }) : undefined}
         />
 
         {activeCategory && (
@@ -321,8 +324,8 @@ export default function Home() {
             <div ref={sentinelRef} className="h-1" />
             <p className="text-center text-xs text-ink/40 font-body py-8">
               {hasMoreCategoryItems
-                ? `Loading more ${activeCategory.name.toLowerCase()}…`
-                : `You've reached the end — that's all the ${activeCategory.name.toLowerCase()} for now.`}
+                ? t('home.loadingMore', { name: activeCategory.name.toLowerCase() })
+                : t('home.reachedEnd', { name: activeCategory.name.toLowerCase() })}
             </p>
           </>
         )}
@@ -330,16 +333,16 @@ export default function Home() {
 
       {/* 4. Why ReGebeya */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
-        <h2 className="font-display font-extrabold text-2xl text-ink text-center mb-8">Why ReGebeya?</h2>
+        <h2 className="font-display font-extrabold text-2xl text-ink text-center mb-8">{t('home.whyRegebeya')}</h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {WHY_REGEBEYA.map((item) => (
-            <div key={item.title} className={`rounded-2xl p-6 text-center ${item.bg}`}>
+            <div key={item.titleKey} className={`rounded-2xl p-6 text-center ${item.bg}`}>
               <span className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 ${item.iconBg}`}>
                 {item.icon}
               </span>
-              <h3 className="font-display font-bold text-sm text-ink mb-1">{item.title}</h3>
-              <p className="text-xs font-body text-ink/60">{item.body}</p>
+              <h3 className="font-display font-bold text-sm text-ink mb-1">{t(`home.${item.titleKey}`)}</h3>
+              <p className="text-xs font-body text-ink/60">{t(`home.${item.bodyKey}`)}</p>
             </div>
           ))}
         </div>
@@ -361,10 +364,10 @@ export default function Home() {
           <div className="flex-1 flex items-center justify-between gap-4 sm:gap-6 px-4 sm:px-8 h-full relative z-10">
             <div>
               <p className="font-display font-extrabold text-base sm:text-2xl text-ink leading-snug">
-                Have something you don't need anymore?
+                {t('home.ctaLine1')}
               </p>
               <p className="font-display font-extrabold text-base sm:text-2xl text-mustard leading-snug">
-                Give it a new home.
+                {t('home.ctaLine2')}
               </p>
             </div>
 
@@ -375,7 +378,7 @@ export default function Home() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-              Sell an Item
+              {t('home.sellAnItem')}
             </Link>
           </div>
 
@@ -412,7 +415,7 @@ export default function Home() {
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
-          Sell an Item
+          {t('home.sellAnItem')}
         </Link>
       </section>
     </div>

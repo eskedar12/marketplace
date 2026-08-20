@@ -3,12 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
 import { Input } from '../../components/common/Input.jsx';
 import Button from '../../components/common/Button.jsx';
+import { useLanguage } from '../../hooks/useLanguage.js';
 
 const EMPTY = { name: '', email: '', password: '', phone: '', city: '', neighborhood: '', role: 'buyer' };
 
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [form, setForm] = useState(EMPTY);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -33,40 +35,40 @@ export default function Register() {
 
   return (
     <div className="max-w-sm mx-auto px-4 py-16">
-      <h1 className="text-2xl font-700 mb-6">Create your account</h1>
+      <h1 className="text-2xl font-700 mb-6">{t('auth.createAccount')}</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <Input label="Full name" required value={form.name} onChange={(e) => update('name', e.target.value)} />
+        <Input label={t('auth.fullName')} required value={form.name} onChange={(e) => update('name', e.target.value)} />
         <Input
-          label="Email"
+          label={t('auth.email')}
           type="email"
           required
           value={form.email}
           onChange={(e) => update('email', e.target.value)}
         />
         <Input
-          label="Password"
+          label={t('auth.password')}
           type="password"
           required
-          hint="At least 8 characters"
+          hint={t('auth.passwordHint')}
           value={form.password}
           onChange={(e) => update('password', e.target.value)}
         />
         <Input
-          label="Phone"
+          label={t('auth.phone')}
           required
           placeholder="+2519…"
           value={form.phone}
           onChange={(e) => update('phone', e.target.value)}
         />
-        <Input label="City" required value={form.city} onChange={(e) => update('city', e.target.value)} />
+        <Input label={t('auth.city')} required value={form.city} onChange={(e) => update('city', e.target.value)} />
         <Input
-          label="Neighborhood (optional)"
+          label={t('auth.neighborhoodOptional')}
           value={form.neighborhood}
           onChange={(e) => update('neighborhood', e.target.value)}
         />
 
         <div>
-          <label className="block text-sm font-body font-medium text-ink mb-1.5">I want to</label>
+          <label className="block text-sm font-body font-medium text-ink mb-1.5">{t('auth.iWantTo')}</label>
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
@@ -77,7 +79,7 @@ export default function Register() {
                   : 'border-line text-ink/60 hover:border-ink/30'
               }`}
             >
-              Buy items
+              {t('auth.buyItems')}
             </button>
             <button
               type="button"
@@ -88,20 +90,20 @@ export default function Register() {
                   : 'border-line text-ink/60 hover:border-ink/30'
               }`}
             >
-              Sell items
+              {t('auth.sellItems')}
             </button>
           </div>
         </div>
 
         {error && <p className="text-clay text-sm">{error}</p>}
         <Button type="submit" disabled={submitting} className="w-full">
-          {submitting ? 'Creating account…' : 'Sign up'}
+          {submitting ? t('auth.creatingAccount') : t('auth.signUp')}
         </Button>
       </form>
       <p className="text-sm text-ink/60 mt-4 font-body">
-        Already have an account?{' '}
+        {t('auth.alreadyHaveAccount')}{' '}
         <Link to="/login" className="text-juniper font-600">
-          Log in
+          {t('auth.login')}
         </Link>
       </p>
     </div>

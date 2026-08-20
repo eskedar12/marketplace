@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { conversationsApi } from '../../api/conversations.api.js';
 import { timeAgo } from '../../utils/formatters.js';
 import Spinner from '../../components/common/Spinner.jsx';
+import { useLanguage } from '../../hooks/useLanguage.js';
 
 export default function Inbox() {
+  const { t } = useLanguage();
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -19,15 +21,15 @@ export default function Inbox() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-      <h1 className="text-2xl font-700 mb-6">Messages</h1>
+      <h1 className="text-2xl font-700 mb-6">{t('chat.messages')}</h1>
 
       {error && <p className="text-clay text-sm font-body mb-4">{error}</p>}
       {loading ? (
         <Spinner />
       ) : conversations.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-line">
-          <p className="font-display font-600 text-lg">No conversations yet</p>
-          <p className="text-ink/50 text-sm mt-1 font-body">Message a seller from a listing page to start one.</p>
+          <p className="font-display font-600 text-lg">{t('chat.noConversations')}</p>
+          <p className="text-ink/50 text-sm mt-1 font-body">{t('chat.noConversationsHint')}</p>
         </div>
       ) : (
         <div className="divide-y divide-line border-t border-b border-line">
@@ -41,11 +43,11 @@ export default function Inbox() {
                 <p className="font-display font-600 text-sm truncate">{c.other_user_name}</p>
                 <p className="text-xs text-ink/50 font-body mt-0.5 truncate">{c.listing_title}</p>
                 <p className="text-xs text-ink/50 font-body mt-0.5 truncate">
-                  {c.last_message || 'No messages yet'}
+                  {c.last_message || t('chat.noMessagesYet')}
                 </p>
               </div>
               <span className="text-xs text-ink/40 font-body whitespace-nowrap">
-                {timeAgo(c.last_message_at || c.created_at)}
+                {timeAgo(c.last_message_at || c.created_at, t)}
               </span>
             </Link>
           ))}

@@ -1,17 +1,19 @@
 import React from 'react';
 import ListingCard from './ListingCard.jsx';
 import Spinner from '../common/Spinner.jsx';
+import { useLanguage } from '../../hooks/useLanguage.js';
 
-export default function ListingGrid({ listings, loading, emptyTitle = 'No listings match yet', emptyHint = 'Try widening your filters.' }) {
+export default function ListingGrid({ listings, loading, emptyTitle, emptyHint }) {
+  const { t } = useLanguage();
   if (loading) {
-    return <Spinner label="Loading listings…" className="py-16 justify-center" />;
+    return <Spinner label={t('listings.loadingListings')} className="py-16 justify-center" />;
   }
 
   if (!listings.length) {
     return (
       <div className="text-center py-16 border border-dashed border-line">
-        <p className="font-display font-600 text-lg">{emptyTitle}</p>
-        <p className="text-ink/50 text-sm mt-1 font-body">{emptyHint}</p>
+        <p className="font-display font-600 text-lg">{emptyTitle || t('listings.noListingsYet')}</p>
+        <p className="text-ink/50 text-sm mt-1 font-body">{emptyHint || t('listings.widenFilters')}</p>
       </div>
     );
   }

@@ -6,10 +6,12 @@ import { useAuth } from '../../hooks/useAuth.js';
 import Spinner from '../../components/common/Spinner.jsx';
 import Button from '../../components/common/Button.jsx';
 import { Textarea } from '../../components/common/Input.jsx';
+import { useLanguage } from '../../hooks/useLanguage.js';
 
 export default function Thread() {
   const { id } = useParams();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState('');
@@ -106,7 +108,7 @@ export default function Thread() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 flex flex-col h-[calc(100vh-8rem)]">
       <Link to="/messages" className="text-sm font-body text-ink/50 hover:text-ink mb-4">
-        ← Back to messages
+        {t('chat.backToMessages')}
       </Link>
 
       {conversation && (
@@ -118,19 +120,19 @@ export default function Thread() {
                 to={`/listings/${conversation.listing_id}`}
                 className="text-xs font-body text-ink/50 hover:text-mustard truncate block"
               >
-                Re: {conversation.listing_title}
+                {t('chat.re', { title: conversation.listing_title })}
               </Link>
             </div>
             {isBuyer && !checkingReview && !existingReview && !showReviewForm && (
               <Button variant="outline" className="flex-shrink-0" onClick={() => setShowReviewForm(true)}>
-                Rate seller
+                {t('chat.rateSeller')}
               </Button>
             )}
           </div>
 
           {existingReview && (
             <div className="mt-2 text-sm font-body text-ink/70">
-              You rated this seller <span className="font-600 text-ink">{existingReview.score} ★</span>
+              {t('chat.youRated')} <span className="font-600 text-ink">{existingReview.score} ★</span>
               {existingReview.comment && <span> — "{existingReview.comment}"</span>}
             </div>
           )}
@@ -138,7 +140,7 @@ export default function Thread() {
           {showReviewForm && (
             <form onSubmit={submitReview} className="space-y-2 border border-line bg-white p-3 mt-3">
               <label className="block text-xs font-body font-600 text-ink/60 uppercase tracking-wide">
-                Your rating of {otherUserName}
+                {t('chat.yourRatingOf', { name: otherUserName })}
               </label>
               <select
                 value={reviewScore}
@@ -153,17 +155,17 @@ export default function Thread() {
               </select>
               <Textarea
                 rows={2}
-                placeholder="Optional comment about this seller…"
+                placeholder={t('chat.commentPlaceholder')}
                 value={reviewComment}
                 onChange={(e) => setReviewComment(e.target.value)}
               />
               {reviewError && <p className="text-clay text-sm font-body">{reviewError}</p>}
               <div className="flex gap-2">
                 <Button type="submit" disabled={submittingReview}>
-                  {submittingReview ? 'Submitting…' : 'Submit review'}
+                  {submittingReview ? t('chat.submitting') : t('chat.submitReview')}
                 </Button>
                 <Button type="button" variant="ghost" onClick={() => setShowReviewForm(false)}>
-                  Cancel
+                  {t('chat.cancel')}
                 </Button>
               </div>
             </form>
@@ -199,10 +201,10 @@ export default function Thread() {
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="Write a message…"
+          placeholder={t('chat.writeMessage')}
           className="flex-1 border border-line px-3 py-2 text-sm focus:outline-none focus:border-juniper bg-white"
         />
-        <Button type="submit">Send</Button>
+        <Button type="submit">{t('chat.send')}</Button>
       </form>
     </div>
   );

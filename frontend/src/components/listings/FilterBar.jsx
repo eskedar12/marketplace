@@ -3,8 +3,10 @@ import { categoriesApi } from '../../api/listings.api.js';
 import { CONDITIONS } from '../../utils/formatters.js';
 import { CITIES, PRICE_RANGES } from '../../utils/constants.js';
 import { Input, Select } from '../common/Input.jsx';
+import { useLanguage } from '../../hooks/useLanguage.js';
 
 export default function FilterBar({ filters, onChange }) {
+  const { t } = useLanguage();
   const [categoryTree, setCategoryTree] = useState([]);
 
   useEffect(() => {
@@ -20,6 +22,26 @@ export default function FilterBar({ filters, onChange }) {
   const categoryOptions = categoryTree.map((parent) => ({
     value: parent.id,
     label: parent.name,
+  }));
+
+  const conditionOptions = CONDITIONS.map((c) => ({
+    value: c.value,
+    label:
+      c.value === 'brand_new'
+        ? t('listings.brandNew')
+        : c.value === 'lightly_used'
+        ? t('listings.lightlyUsed')
+        : t('listings.used'),
+  }));
+
+  const priceRangeOptions = PRICE_RANGES.map((r) => ({
+    value: r.value,
+    label:
+      r.min === 0
+        ? t('listings.underAmount', { amount: r.max.toLocaleString('en-US') })
+        : r.max === null
+        ? t('listings.overAmount', { amount: r.min.toLocaleString('en-US') })
+        : t('listings.rangeAmount', { min: r.min.toLocaleString('en-US'), max: r.max.toLocaleString('en-US') }),
   }));
 
   const cityOptions = CITIES.map((city) => ({ value: city, label: city }));
@@ -41,30 +63,30 @@ export default function FilterBar({ filters, onChange }) {
   return (
     <div className="space-y-4">
       <Input
-        placeholder="Search items…"
+        placeholder={t('listings.searchPlaceholder')}
         value={filters.q}
         onChange={(e) => onChange('q', e.target.value)}
       />
       <Select
-        placeholder="All categories"
+        placeholder={t('listings.allCategories')}
         value={filters.category_id}
         onChange={(e) => onChange('category_id', e.target.value)}
         options={categoryOptions}
       />
       <Select
-        placeholder="Any condition"
+        placeholder={t('listings.anyCondition')}
         value={filters.condition}
         onChange={(e) => onChange('condition', e.target.value)}
-        options={CONDITIONS}
+        options={conditionOptions}
       />
       <Select
-        placeholder="Any price"
+        placeholder={t('listings.anyPrice')}
         value={priceRangeValue}
         onChange={handlePriceRangeChange}
-        options={PRICE_RANGES}
+        options={priceRangeOptions}
       />
       <Select
-        placeholder="All cities"
+        placeholder={t('listings.allCities')}
         value={filters.city}
         onChange={(e) => onChange('city', e.target.value)}
         options={cityOptions}

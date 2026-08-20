@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../../hooks/useLanguage.js';
 import { CATEGORY_VISUALS } from '../../utils/categoryIcons.jsx';
 
 // Pulled from the same source of truth as the navbar's Categories
@@ -12,9 +13,9 @@ const CATEGORY_LINKS = CATEGORY_VISUALS.slice(0, 5).map((c) => ({
   slug: c.dbSlug,
 }));
 
-const HELP_LINKS = ['Help Center', 'How to Buy', 'How to Sell', 'Payment & Safety', 'Contact Support'];
-const SAFETY_LINKS = ['Meet in Safe Places', 'Check Before You Buy', 'Avoid Scams', 'Report Fraud', 'Safety Center'];
-const ABOUT_LINKS = ['About Us', 'Our Mission', 'Terms of Use', 'Privacy Policy'];
+const HELP_LINKS = ['helpCenter', 'howToBuy', 'howToSell', 'paymentSafety', 'contactSupport'];
+const SAFETY_LINKS = ['meetSafePlaces', 'checkBeforeBuy', 'avoidScams', 'reportFraud', 'safetyCenter'];
+const ABOUT_LINKS = ['aboutUs', 'ourMission', 'termsOfUse', 'privacyPolicy'];
 
 const SOCIALS = [
   {
@@ -54,6 +55,7 @@ const SOCIALS = [
 ];
 
 export default function Footer() {
+  const { t } = useLanguage();
   return (
     <footer className="bg-ink mt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
@@ -65,7 +67,7 @@ export default function Footer() {
               <span className="text-white">Gebeya</span>
             </Link>
             <p className="text-sm font-body text-white/50 leading-relaxed mt-3 max-w-xs">
-              Ethiopia's trusted marketplace for buying and selling used items easily and safely.
+              {t('footer.tagline')}
             </p>
             <div className="flex items-center gap-2 mt-5">
               {SOCIALS.map((s) => (
@@ -83,7 +85,7 @@ export default function Footer() {
 
           {/* Categories */}
           <div>
-            <h4 className="font-display font-bold text-sm text-white mb-4">Categories</h4>
+            <h4 className="font-display font-bold text-sm text-white mb-4">{t('footer.categories')}</h4>
             <ul className="space-y-2.5 text-sm font-body text-white/60">
               {CATEGORY_LINKS.map((c) => (
                 <li key={c.slug}>
@@ -94,7 +96,7 @@ export default function Footer() {
               ))}
               <li>
                 <Link to="/listings" className="text-mustard font-medium hover:text-mustard-dark transition-colors">
-                  View all categories &rarr;
+                  {t('footer.viewAllCategories')}
                 </Link>
               </li>
             </ul>
@@ -102,11 +104,11 @@ export default function Footer() {
 
           {/* Help & Support */}
           <div>
-            <h4 className="font-display font-bold text-sm text-white mb-4">Help &amp; Support</h4>
+            <h4 className="font-display font-bold text-sm text-white mb-4">{t('footer.helpSupport')}</h4>
             <ul className="space-y-2.5 text-sm font-body text-white/60">
-              {HELP_LINKS.map((label) => (
-                <li key={label}>
-                  <a href="#" className="hover:text-mustard transition-colors">{label}</a>
+              {HELP_LINKS.map((key) => (
+                <li key={key}>
+                  <a href="#" className="hover:text-mustard transition-colors">{t(`footer.${key}`)}</a>
                 </li>
               ))}
             </ul>
@@ -114,11 +116,11 @@ export default function Footer() {
 
           {/* Safety Tips */}
           <div>
-            <h4 className="font-display font-bold text-sm text-white mb-4">Safety Tips</h4>
+            <h4 className="font-display font-bold text-sm text-white mb-4">{t('footer.safetyTips')}</h4>
             <ul className="space-y-2.5 text-sm font-body text-white/60">
-              {SAFETY_LINKS.map((label) => (
-                <li key={label}>
-                  <a href="#" className="hover:text-mustard transition-colors">{label}</a>
+              {SAFETY_LINKS.map((key) => (
+                <li key={key}>
+                  <a href="#" className="hover:text-mustard transition-colors">{t(`footer.${key}`)}</a>
                 </li>
               ))}
             </ul>
@@ -126,16 +128,16 @@ export default function Footer() {
 
           {/* About + Contact */}
           <div>
-            <h4 className="font-display font-bold text-sm text-white mb-4">About ReGebeya</h4>
+            <h4 className="font-display font-bold text-sm text-white mb-4">{t('footer.about')}</h4>
             <ul className="space-y-2.5 text-sm font-body text-white/60 mb-6">
-              {ABOUT_LINKS.map((label) => (
-                <li key={label}>
-                  <a href="#" className="hover:text-mustard transition-colors">{label}</a>
+              {ABOUT_LINKS.map((key) => (
+                <li key={key}>
+                  <a href="#" className="hover:text-mustard transition-colors">{t(`footer.${key}`)}</a>
                 </li>
               ))}
             </ul>
 
-            <h4 className="font-display font-bold text-sm text-white mb-4">Contact</h4>
+            <h4 className="font-display font-bold text-sm text-white mb-4">{t('footer.contact')}</h4>
             <ul className="space-y-2.5 text-sm font-body text-white/60">
               <li className="flex items-center gap-2">
                 <svg className="w-4 h-4 text-mustard flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -154,14 +156,14 @@ export default function Footer() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17.66 16.66L13.4 20.9a2 2 0 01-2.83 0l-4.24-4.24a8 8 0 1111.31 0z" />
                   <circle cx="12" cy="11" r="3" />
                 </svg>
-                Addis Ababa, Ethiopia
+                {t('footer.address')}
               </li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-white/10 mt-10 pt-6 text-center text-xs text-white/40 font-body">
-          &copy; {new Date().getFullYear()} ReGebeya. All rights reserved.
+          &copy; {new Date().getFullYear()} {t('footer.rights')}
         </div>
       </div>
     </footer>

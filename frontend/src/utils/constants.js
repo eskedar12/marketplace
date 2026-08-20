@@ -17,13 +17,15 @@ export const CITIES = [
 // Preset price brackets for the listings filter, so the user picks a
 // range from a dropdown instead of typing exact min/max ETB values.
 // value encodes "min-max" (empty side = unbounded), parsed by
-// FilterBar into filters.min_price / filters.max_price.
+// FilterBar into filters.min_price / filters.max_price. Labels are
+// built at render time via FilterBar's t() so they translate; this
+// array only carries the boundaries.
 export const PRICE_RANGES = [
-  { label: 'Under 1,000 ETB', value: '0-1000' },
-  { label: '1,000 – 5,000 ETB', value: '1000-5000' },
-  { label: '5,000 – 20,000 ETB', value: '5000-20000' },
-  { label: '20,000 – 50,000 ETB', value: '20000-50000' },
-  { label: '50,000 – 200,000 ETB', value: '50000-200000' },
-  { label: 'Over 200,000 ETB', value: '200000-' },
+  { min: 0, max: 1000, value: '0-1000' },
+  { min: 1000, max: 5000, value: '1000-5000' },
+  { min: 5000, max: 20000, value: '5000-20000' },
+  { min: 20000, max: 50000, value: '20000-50000' },
+  { min: 50000, max: 200000, value: '50000-200000' },
+  { min: 200000, max: null, value: '200000-' },
 ];
 

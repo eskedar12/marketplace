@@ -3,8 +3,10 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { ordersApi } from '../../api/orders.api.js';
 import { formatPrice } from '../../utils/formatters.js';
 import Spinner from '../../components/common/Spinner.jsx';
+import { useLanguage } from '../../hooks/useLanguage.js';
 
 export default function OrderComplete() {
+  const { t } = useLanguage();
   const [searchParams] = useSearchParams();
   const txRef = searchParams.get('tx_ref');
   const [orders, setOrders] = useState(null);
@@ -12,7 +14,7 @@ export default function OrderComplete() {
 
   useEffect(() => {
     if (!txRef) {
-      setError('Missing payment reference.');
+      setError(t('orders.complete.missingRef'));
       return;
     }
     ordersApi
@@ -26,7 +28,7 @@ export default function OrderComplete() {
       <div className="max-w-md mx-auto px-4 py-16 text-center">
         <p className="text-clay font-body">{error}</p>
         <Link to="/" className="inline-block mt-4 text-sm font-display font-bold text-juniper hover:text-mustard">
-          Back to ReGebeya
+          {t('common.backToHome')}
         </Link>
       </div>
     );
@@ -44,16 +46,16 @@ export default function OrderComplete() {
           <div className="w-14 h-14 rounded-full bg-juniper/10 text-juniper flex items-center justify-center mx-auto mb-4 text-2xl">
             ✓
           </div>
-          <h1 className="text-xl font-display font-extrabold text-ink">Payment successful</h1>
-          <p className="text-ink/60 font-body text-sm mt-1">{formatPrice(total)} paid</p>
+          <h1 className="text-xl font-display font-extrabold text-ink">{t('orders.complete.success')}</h1>
+          <p className="text-ink/60 font-body text-sm mt-1">{t('orders.complete.paidAmount', { amount: formatPrice(total) })}</p>
         </>
       ) : (
         <>
           <div className="w-14 h-14 rounded-full bg-clay/10 text-clay flex items-center justify-center mx-auto mb-4 text-2xl">
             ✕
           </div>
-          <h1 className="text-xl font-display font-extrabold text-ink">Payment not completed</h1>
-          <p className="text-ink/60 font-body text-sm mt-1">Nothing was charged. You can try again from the listing.</p>
+          <h1 className="text-xl font-display font-extrabold text-ink">{t('orders.complete.failedTitle')}</h1>
+          <p className="text-ink/60 font-body text-sm mt-1">{t('orders.complete.failedHint')}</p>
         </>
       )}
 
@@ -67,7 +69,7 @@ export default function OrderComplete() {
       </div>
 
       <Link to="/orders" className="inline-block mt-6 text-sm font-display font-bold text-juniper hover:text-mustard">
-        View your orders
+        {t('orders.complete.viewOrders')}
       </Link>
     </div>
   );
