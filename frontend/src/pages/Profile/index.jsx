@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { usersApi } from '../../api/auth.api.js';
 import { useAuth } from '../../hooks/useAuth.js';
-import { Input } from '../../components/common/Input.jsx';
+import { Input, Select } from '../../components/common/Input.jsx';
 import Button from '../../components/common/Button.jsx';
 import Spinner from '../../components/common/Spinner.jsx';
 import { useLanguage } from '../../hooks/useLanguage.js';
+import { CITIES } from '../../utils/constants.js';
 
 export default function Profile() {
   const { updateStoredUser } = useAuth();
   const { t } = useLanguage();
+  const cityOptions = CITIES.map((city) => ({ value: city.value, label: t(`cities.${city.key}`) }));
   const [profile, setProfile] = useState(null);
   const [form, setForm] = useState(null);
   const [error, setError] = useState('');
@@ -116,7 +118,14 @@ export default function Profile() {
         <Input label={t('profile.fullName')} required value={form.name} onChange={(e) => update('name', e.target.value)} />
         <Input label={t('profile.email')} value={form.email} disabled className="opacity-60" />
         <Input label={t('profile.phone')} required value={form.phone} onChange={(e) => update('phone', e.target.value)} />
-        <Input label={t('profile.city')} required value={form.city} onChange={(e) => update('city', e.target.value)} />
+        <Select
+          label={t('profile.city')}
+          required
+          placeholder={t('common.select')}
+          value={form.city}
+          onChange={(e) => update('city', e.target.value)}
+          options={cityOptions}
+        />
         <Input
           label={t('profile.neighborhood')}
           value={form.neighborhood || ''}

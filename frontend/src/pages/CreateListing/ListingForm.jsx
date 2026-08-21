@@ -5,6 +5,7 @@ import { Input, Textarea, Select } from '../../components/common/Input.jsx';
 import Button from '../../components/common/Button.jsx';
 import { useLanguage } from '../../hooks/useLanguage.js';
 import { CATEGORY_VISUALS } from '../../utils/categoryIcons.jsx';
+import { CITIES } from '../../utils/constants.js';
 
 // Categories come back from the API with their raw (English) `name`.
 // Every other category list in the app (homepage grid, navbar) shows a
@@ -58,6 +59,8 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
         ? t('listings.lightlyUsed')
         : t('listings.used'),
   }));
+
+  const cityOptions = CITIES.map((city) => ({ value: city.value, label: t(`cities.${city.key}`) }));
 
   useEffect(() => {
     categoriesApi.getAll().then((res) => setCategories(res.data)).catch(() => {});
@@ -217,7 +220,14 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
         options={categories.map((c) => ({ value: c.id, label: categoryLabel(c, t) }))}
       />
       <div className="grid grid-cols-2 gap-4">
-        <Input label={t('createListing.city')} required value={form.city} onChange={(e) => update('city', e.target.value)} />
+        <Select
+          label={t('createListing.city')}
+          required
+          placeholder={t('common.select')}
+          value={form.city}
+          onChange={(e) => update('city', e.target.value)}
+          options={cityOptions}
+        />
         <Input
           label={t('createListing.neighborhood')}
           value={form.neighborhood}

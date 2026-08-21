@@ -6,6 +6,7 @@ import { cartApi } from '../../api/cart.api.js';
 import { ordersApi } from '../../api/orders.api.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { conditionLabel, formatPrice, timeAgo } from '../../utils/formatters.js';
+import { cityLabel } from '../../utils/constants.js';
 import Button from '../../components/common/Button.jsx';
 import { Textarea } from '../../components/common/Input.jsx';
 import Spinner from '../../components/common/Spinner.jsx';
@@ -163,7 +164,7 @@ export default function ListingDetail() {
           <p className="font-display font-bold text-2xl text-mustard mt-2">{formatPrice(listing.price)}</p>
           <p className="text-sm text-ink/50 font-body mt-1">
             {listing.neighborhood ? `${listing.neighborhood}, ` : ''}
-            {listing.city} · {t('listingDetail.postedTimeAgo', { time: timeAgo(listing.created_at, t) })}
+            {cityLabel(listing.city, t)} · {t('listingDetail.postedTimeAgo', { time: timeAgo(listing.created_at, t) })}
           </p>
         </div>
 

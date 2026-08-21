@@ -4,6 +4,7 @@ import { usersApi, ratingsApi } from '../../api/auth.api.js';
 import Spinner from '../../components/common/Spinner.jsx';
 import { timeAgo } from '../../utils/formatters.js';
 import { useLanguage } from '../../hooks/useLanguage.js';
+import { cityLabel } from '../../utils/constants.js';
 
 export default function PublicProfile() {
   const { id } = useParams();
@@ -30,7 +31,7 @@ export default function PublicProfile() {
     <div className="max-w-md mx-auto px-4 sm:px-6 py-8">
       <h1 className="text-2xl font-700">{profile.name}</h1>
       <p className="text-ink/60 text-sm font-body mt-1">
-        {profile.city}
+        {cityLabel(profile.city, t)}
         {profile.is_verified && <span className="ml-2 text-juniper font-600">{t('profile.verified')}</span>}
       </p>
 

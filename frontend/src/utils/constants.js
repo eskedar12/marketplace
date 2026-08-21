@@ -23,6 +23,21 @@ export const CITIES = [
 // FilterBar into filters.min_price / filters.max_price. Labels are
 // built at render time via FilterBar's t() so they translate; this
 // array only carries the boundaries.
+// Looks up the translated display label for a city value coming back
+// from the backend (listing.city, profile.city, filters.city, etc).
+// Matching is case-insensitive (and trims whitespace) so listings
+// created before the city dropdown existed — which may have
+// free-typed casing like "addis ababa" — still get translated instead
+// of silently falling through to the raw value. Anything that still
+// doesn't match (a city genuinely not in the CITIES list) falls back
+// to the raw value itself, so nothing breaks.
+export function cityLabel(value, t) {
+  if (!value) return value;
+  const normalized = value.trim().toLowerCase();
+  const city = CITIES.find((c) => c.value.toLowerCase() === normalized);
+  return city ? t(`cities.${city.key}`) : value;
+}
+
 export const PRICE_RANGES = [
   { min: 0, max: 1000, value: '0-1000' },
   { min: 1000, max: 5000, value: '1000-5000' },

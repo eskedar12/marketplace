@@ -6,6 +6,7 @@ import FilterBar from '../../components/listings/FilterBar.jsx';
 import ListingGrid from '../../components/listings/ListingGrid.jsx';
 import Button from '../../components/common/Button.jsx';
 import { useLanguage } from '../../hooks/useLanguage.js';
+import { cityLabel } from '../../utils/constants.js';
 
 // The full "browse everything" page — reached from the homepage's
 // "View All" link and the footer's "View all categories" link. Single
@@ -54,7 +55,7 @@ export default function Listings() {
           )}
           {filters.city && (
             <span className="inline-flex items-center gap-1.5 bg-paper text-ink text-xs font-medium px-2.5 py-1 rounded-lg">
-              {t('listings.city', { city: filters.city })}
+              {t('listings.city', { city: cityLabel(filters.city, t) })}
               <button onClick={() => updateFilter('city', '')} className="text-ink/40 hover:text-ink/70 font-bold leading-none">&times;</button>
             </span>
           )}

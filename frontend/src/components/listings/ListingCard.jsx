@@ -4,6 +4,7 @@ import { formatPrice } from '../../utils/formatters.js';
 import { favoritesApi } from '../../api/listings.api.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useLanguage } from '../../hooks/useLanguage.js';
+import { cityLabel } from '../../utils/constants.js';
 
 // "Used"-style badge shown on each card. Brand new / lightly used
 // read as a light, trustworthy green; fair condition reads as an
@@ -98,7 +99,7 @@ export default function ListingCard({ listing }) {
             <path strokeLinecap="round" strokeLinejoin="round" d="M17.66 16.66L13.4 20.9a2 2 0 01-2.83 0l-4.24-4.24a8 8 0 1111.31 0z" />
             <circle cx="12" cy="11" r="3" />
           </svg>
-          <span className="truncate">{listing.city}</span>
+          <span className="truncate">{cityLabel(listing.city, t)}</span>
         </div>
       </div>
     </Link>

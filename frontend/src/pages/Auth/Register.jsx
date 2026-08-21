@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
-import { Input } from '../../components/common/Input.jsx';
+import { Input, Select } from '../../components/common/Input.jsx';
 import Button from '../../components/common/Button.jsx';
 import { useLanguage } from '../../hooks/useLanguage.js';
+import { CITIES } from '../../utils/constants.js';
 
 const EMPTY = { name: '', email: '', password: '', phone: '', city: '', neighborhood: '', role: 'buyer' };
 
@@ -12,6 +13,7 @@ export default function Register() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [form, setForm] = useState(EMPTY);
+  const cityOptions = CITIES.map((city) => ({ value: city.value, label: t(`cities.${city.key}`) }));
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -60,7 +62,14 @@ export default function Register() {
           value={form.phone}
           onChange={(e) => update('phone', e.target.value)}
         />
-        <Input label={t('auth.city')} required value={form.city} onChange={(e) => update('city', e.target.value)} />
+        <Select
+          label={t('auth.city')}
+          required
+          placeholder={t('common.select')}
+          value={form.city}
+          onChange={(e) => update('city', e.target.value)}
+          options={cityOptions}
+        />
         <Input
           label={t('auth.neighborhoodOptional')}
           value={form.neighborhood}
