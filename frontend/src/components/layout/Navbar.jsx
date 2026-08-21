@@ -12,6 +12,7 @@ const QUICK_LINKS = [
   { key: 'electronics', name: 'Electronics' },
   { key: 'fashion', name: 'Fashion' },
   { key: 'vehicles', name: 'Vehicles' },
+  { key: 'catFurniture', name: 'Furniture & Home' },
 ];
 
 // Compact language switcher — a button showing the current language's
@@ -37,7 +38,7 @@ function LanguageSwitcher() {
         onClick={() => setOpen((o) => !o)}
         title={t('navbar.language')}
         aria-label={t('navbar.language')}
-        className={`flex items-center gap-1 px-2 py-2 text-sm font-body font-medium rounded-lg transition-colors ${
+        className={`flex items-center gap-1 px-2 py-2 text-sm font-display font-semibold rounded-lg transition-colors ${
           open ? 'text-mustard bg-mustard/5' : 'text-ink/70 hover:text-mustard hover:bg-mustard/5'
         }`}
       >
@@ -129,7 +130,7 @@ export default function Navbar() {
 
   return (
     <header className="bg-white sticky top-0 z-30 shadow-sm">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-10 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 font-display font-extrabold text-2xl tracking-tight flex-shrink-0">
           <svg
@@ -163,12 +164,12 @@ export default function Navbar() {
         </Link>
 
         {/* Center nav: Categories dropdown + quick links */}
-        <nav className="hidden md:flex items-center gap-1" ref={menuRef}>
+        <nav className="hidden md:flex items-center gap-6" ref={menuRef}>
           <div className="relative">
             <button
               onClick={() => setMenuOpen((o) => !o)}
-              className={`flex items-center gap-1.5 px-3 py-2 text-sm font-body font-medium rounded-lg transition-colors ${
-                menuOpen ? 'text-mustard bg-mustard/5' : 'text-ink/80 hover:text-mustard'
+              className={`flex items-center gap-1.5 text-sm font-display font-semibold transition-colors ${
+                menuOpen ? 'text-mustard' : 'text-ink/80 hover:text-mustard'
               }`}
             >
               {t('navbar.categories')}
@@ -211,7 +212,7 @@ export default function Navbar() {
               <Link
                 key={key}
                 to={`/?category=${slug}`}
-                className="px-3 py-2 text-sm font-body font-medium text-ink/80 hover:text-mustard transition-colors"
+                className="text-sm font-display font-semibold text-ink/80 hover:text-mustard transition-colors"
               >
                 {t(`navbar.${key}`)}
               </Link>
@@ -220,7 +221,7 @@ export default function Navbar() {
         </nav>
 
         {/* Right side: auth + sell */}
-        <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
+        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
           {user ? (
             <>
               {/* Role-specific icon: My Listings for sellers, plus Cart for
@@ -262,23 +263,21 @@ export default function Navbar() {
                   logout();
                   navigate('/');
                 }}
-                className="hidden sm:inline px-2 py-2 text-sm font-body text-ink/60 hover:text-clay transition-colors"
+                className="hidden sm:inline text-sm font-display font-semibold text-ink/60 hover:text-clay transition-colors"
               >
                 {t('navbar.logout')}
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="px-2 sm:px-3 py-2 text-sm font-body text-ink/80 hover:text-mustard font-medium transition-colors">
+              <Link to="/login" className="text-sm font-display font-semibold text-ink/80 hover:text-mustard transition-colors">
                 {t('navbar.login')}
               </Link>
-              <Link to="/register" className="hidden sm:inline px-3 py-2 text-sm font-body text-ink/80 hover:text-mustard font-medium transition-colors">
+              <Link to="/register" className="hidden sm:inline text-sm font-display font-semibold text-ink/80 hover:text-mustard transition-colors">
                 {t('navbar.register')}
               </Link>
             </>
           )}
-
-          <LanguageSwitcher />
 
           {(!user || user.role === 'seller') && (
             <Button
@@ -293,6 +292,8 @@ export default function Navbar() {
               {t('navbar.sell')}
             </Button>
           )}
+
+          <LanguageSwitcher />
         </div>
       </div>
     </header>
