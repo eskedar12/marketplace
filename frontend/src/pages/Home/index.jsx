@@ -93,23 +93,44 @@ export default function Home() {
   // no navigation away from Home) ---------------------------------
   const [searchParams, setSearchParams] = useSearchParams();
   const categorySlug = searchParams.get('category');
+  const subSlug = searchParams.get('sub');
   const activeCategory = categorySlug
     ? CATEGORY_VISUALS.find((c) => c.dbSlug === categorySlug)
     : null;
 
-  // categoryIds resolves the slug to every category_id whose listings
-  // belong here (the category itself, plus subcategories if any exist).
-  const [categoryIds, setCategoryIds] = useState(null);
+  // categoryDetail comes from GET /api/categories/:slug — the category
+  // itself plus its subcategories (for the pill row) and categoryIds
+  // (every id whose listings belong under this category).
+  const [categoryDetail, setCategoryDetail] = useState(null);
   useEffect(() => {
     if (!activeCategory) {
-      setCategoryIds(null);
+      setCategoryDetail(null);
       return;
     }
     categoriesApi
       .getBySlug(activeCategory.dbSlug)
-      .then((res) => setCategoryIds(res.data.categoryIds))
-      .catch(() => setCategoryIds([]));
+      .then((res) => setCategoryDetail(res.data))
+      .catch(() => setCategoryDetail({ subcategories: [], categoryIds: [] }));
   }, [activeCategory]);
+
+  // When a subcategory pill is picked, narrow down to just that
+  // subcategory's id; otherwise browse every id under the category.
+  const activeSubcategory = subSlug
+    ? categoryDetail?.subcategories.find((s) => s.slug === subSlug) || null
+    : null;
+  const categoryIds = activeSubcategory
+    ? [activeSubcategory.id]
+    : categoryDetail?.categoryIds ?? null;
+
+  function selectSubcategory(slug) {
+    const next = new URLSearchParams(searchParams);
+    if (slug) {
+      next.set('sub', slug);
+    } else {
+      next.delete('sub');
+    }
+    setSearchParams(next);
+  }
 
   const [categoryItems, setCategoryItems] = useState([]);
   const [categoryPage, setCategoryPage] = useState(1);
@@ -120,20 +141,22 @@ export default function Home() {
     setCategoryItems([]);
     setCategoryPage(1);
     setCategoryTotal(0);
-  }, [categorySlug]);
+  }, [categorySlug, subSlug]);
+
+  const categoryIdsKey = categoryIds ? categoryIds.join(',') : null;
 
   useEffect(() => {
-    if (!activeCategory || categoryIds === null) return;
+    if (!activeCategory || categoryIdsKey === null) return;
     setCategoryLoading(true);
     listingsApi
-      .search({ category_id: categoryIds.join(','), page: categoryPage, limit: PAGE_SIZE })
+      .search({ category_id: categoryIdsKey, page: categoryPage, limit: PAGE_SIZE })
       .then((res) => {
         setCategoryItems((prev) => (categoryPage === 1 ? res.data.items : [...prev, ...res.data.items]));
         setCategoryTotal(res.data.total ?? 0);
       })
       .catch(() => {})
       .finally(() => setCategoryLoading(false));
-  }, [activeCategory, categoryIds, categoryPage]);
+  }, [activeCategory, categoryIdsKey, categoryPage]);
 
   const hasMoreCategoryItems = categoryItems.length < categoryTotal;
 
@@ -156,18 +179,16 @@ export default function Home() {
     return () => observer.disconnect();
   }, [activeCategory, hasMoreCategoryItems, categoryLoading]);
 
-  // Bring the listings section into view when a category is chosen
-  // from the navbar, so it's obvious something changed.
+  // Smooth-scrolled to on click from the "Browse by Category" grid
+  // below (see its onClick handlers) so picking a category there jumps
+  // straight to the results. The top navbar's category links deliberately
+  // don't trigger this — they only swap the hero theme in place.
   const listingsSectionRef = useRef(null);
-  useEffect(() => {
-    if (activeCategory) {
-      listingsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [categorySlug]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function clearCategory() {
     const next = new URLSearchParams(searchParams);
     next.delete('category');
+    next.delete('sub');
     setSearchParams(next);
   }
 
@@ -192,35 +213,45 @@ export default function Home() {
   return (
     <div className="w-full">
       {/* 1. Hero — background, tint, and headline swap per category */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden min-h-[520px] md:min-h-[640px]">
         <div
           key={heroImageUrl}
-          className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
-          style={{ backgroundImage: `url('${heroImageUrl}')` }}
+          className="absolute inset-0 transition-opacity duration-500 bg-ink"
+          style={{
+            backgroundImage: `url('${heroImageUrl}')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
         />
         {/* Light, uniform dark wash — just enough for text contrast,
             without hiding the actual category photo underneath. */}
         <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/45 to-ink/30" />
 
-        <div className="relative max-w-4xl mx-auto z-10 px-4 py-20 md:py-28 text-center">
+        <div className="relative z-10 px-4 sm:px-8 md:px-16 py-20 md:py-28 min-h-[520px] md:min-h-[640px] flex flex-col justify-center max-w-3xl text-left">
           {activeCategory && (
-            <span className="inline-flex items-center gap-2 bg-white/15 text-white text-xs font-body font-semibold px-3 py-1.5 rounded-full mb-5 backdrop-blur border border-white/20">
+            <span className="inline-flex items-center gap-2 bg-white/15 text-white text-xs font-body font-semibold px-3 py-1.5 rounded-full mb-5 backdrop-blur border border-white/20 self-start">
               <span className="w-4 h-4">{activeCategory.icon('w-4 h-4')}</span>
               {t('home.browsing', { name: activeCategoryName })}
             </span>
           )}
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight mb-4 font-display drop-shadow-lg">
-            {t('home.heroQuality')} <span className="text-mustard">{t('home.heroFinds')}</span>, {t('home.heroAffordable')}{' '}
-            <span className="text-mustard">{t('home.heroPrices')}</span>, {t('home.heroAllInOnePlace')}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight mb-3 font-display drop-shadow-lg">
+            {t('home.heroLine1')} <span className="text-mustard">{t('home.heroHighlight')}</span>
+            <br />
+            {t('home.heroLine2')}
           </h1>
+
+          <p className="text-white/70 text-sm sm:text-base font-body mb-8">
+            {t('home.heroSubtitle')}
+          </p>
 
           <form
             onSubmit={handleSearchSubmit}
-            className="max-w-2xl mx-auto bg-white p-2 rounded-2xl md:rounded-full shadow-2xl flex flex-col md:flex-row items-stretch gap-2 mt-10"
+            className="w-full max-w-2xl bg-black/40 backdrop-blur-md border border-white/10 p-2 rounded-2xl md:rounded-full shadow-2xl flex flex-col md:flex-row items-stretch gap-2"
           >
-            <div className="flex-1 flex items-center gap-2 px-4 py-2.5 md:py-0 border-b md:border-b-0 md:border-r border-line">
-              <svg className="w-[18px] h-[18px] text-ink/30 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <div className="flex-1 flex items-center gap-2 px-4 py-2.5 md:py-0 border-b md:border-b-0 md:border-r border-white/15">
+              <svg className="w-[18px] h-[18px] text-white/40 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
@@ -228,19 +259,19 @@ export default function Home() {
                 placeholder={t('home.searchPlaceholder')}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="w-full bg-transparent text-sm text-ink font-body focus:outline-none placeholder-ink/40"
+                className="w-full bg-transparent text-sm text-white font-body focus:outline-none placeholder-white/40"
               />
             </div>
 
             <div className="flex items-center gap-2 px-4 py-2.5 md:py-0 flex-shrink-0">
-              <svg className="w-[18px] h-[18px] text-ink/40 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <svg className="w-[18px] h-[18px] text-white/50 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.66 16.66L13.4 20.9a2 2 0 01-2.83 0l-4.24-4.24a8 8 0 1111.31 0z" />
                 <circle cx="12" cy="11" r="3" />
               </svg>
               <select
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="bg-transparent text-sm font-medium text-ink font-body focus:outline-none cursor-pointer pr-2"
+                className="bg-transparent text-sm font-medium text-white font-body focus:outline-none cursor-pointer pr-2 [&>option]:text-ink"
               >
                 <option value="">{t('home.allEthiopia')}</option>
                 {CITIES.map((c) => (
@@ -264,29 +295,35 @@ export default function Home() {
         <h2 className="font-display font-extrabold text-2xl text-ink mb-8 text-center">{t('home.browseByCategory')}</h2>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
-          {CATEGORY_VISUALS.map((cat) => {
-            const keyword = cat.dbSlug === 'books' ? 'books,bookstack' : getHeroTheme(cat.dbSlug).keyword;
-            return (
-              <Link
-                key={cat.name}
-                to={`/?category=${cat.dbSlug}`}
-                className={`flex flex-col overflow-hidden rounded-2xl border bg-white hover:shadow-md hover:-translate-y-0.5 transition-all ${
-                  categorySlug === cat.dbSlug ? 'border-mustard ring-1 ring-mustard' : 'border-line'
-                }`}
-              >
-                <div className={`w-full aspect-square ${cat.bg}`}>
+          {CATEGORY_VISUALS.map((cat) => (
+            <Link
+              key={cat.name}
+              to={`/?category=${cat.dbSlug}`}
+              onClick={() =>
+                listingsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+              className={`flex flex-col overflow-hidden rounded-2xl border bg-white hover:shadow-md hover:-translate-y-0.5 transition-all ${
+                categorySlug === cat.dbSlug ? 'border-mustard ring-1 ring-mustard' : 'border-line'
+              }`}
+            >
+              <div className={`w-full h-36 sm:h-40 ${cat.bg}`}>
+                {cat.image ? (
                   <img
-                    src={`https://loremflickr.com/400/400/${keyword}?lock=${hashString(cat.dbSlug)}`}
+                    src={cat.image}
                     alt={cat.name}
                     className="w-full h-full object-cover"
                   />
-                </div>
-                <span className="font-body font-medium text-base text-ink leading-tight text-center py-4 px-2">
-                  {t(`navbar.${cat.i18nKey}`)}
-                </span>
-              </Link>
-            );
-          })}
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    {cat.icon(`w-10 h-10 ${cat.fg}`)}
+                  </div>
+                )}
+              </div>
+              <span className="font-body font-medium text-base text-ink leading-tight text-center py-4 px-2">
+                {t(`navbar.${cat.i18nKey}`)}
+              </span>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -313,6 +350,34 @@ export default function Home() {
             </Link>
           )}
         </div>
+
+        {activeCategory && categoryDetail?.subcategories?.length > 0 && (
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-6 -mt-2">
+            <button
+              onClick={() => selectSubcategory(null)}
+              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-body font-semibold whitespace-nowrap border transition-colors ${
+                !activeSubcategory
+                  ? 'bg-ink text-white border-ink'
+                  : 'bg-white text-ink/70 border-line hover:border-ink/40'
+              }`}
+            >
+              All
+            </button>
+            {categoryDetail.subcategories.map((sub) => (
+              <button
+                key={sub.id}
+                onClick={() => selectSubcategory(sub.slug)}
+                className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-body font-semibold whitespace-nowrap border transition-colors ${
+                  activeSubcategory?.slug === sub.slug
+                    ? 'bg-ink text-white border-ink'
+                    : 'bg-white text-ink/70 border-line hover:border-ink/40'
+                }`}
+              >
+                {sub.name}
+              </button>
+            ))}
+          </div>
+        )}
 
         <ListingGrid
           listings={activeCategory ? categoryItems : recent}

@@ -74,7 +74,7 @@ export const HERO_THEMES = {
   },
   jewelry: {
     keyword: 'necklace,ring',
-    image: '/jewelry.jpg',
+    image: '/jewllery.jpg',
     headlineLead: 'Find',
     headlineHighlight: 'your perfect piece',
     headlineTail: 'without the premium price tag.',

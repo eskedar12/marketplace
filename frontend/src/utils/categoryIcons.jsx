@@ -12,6 +12,7 @@ export const CATEGORY_VISUALS = [
     name: 'Electronics',
     i18nKey: 'catElectronics',
     dbSlug: 'electronics',
+    image: '/electronics.jpg',
     bg: 'bg-indigo-50',
     fg: 'text-indigo-600',
     icon: (className) => (
@@ -25,6 +26,7 @@ export const CATEGORY_VISUALS = [
     name: 'Furniture & Home',
     i18nKey: 'catFurniture',
     dbSlug: 'furniture',
+    image: '/furniture.jpg',
     bg: 'bg-amber-50',
     fg: 'text-amber-700',
     icon: (className) => (
@@ -39,6 +41,7 @@ export const CATEGORY_VISUALS = [
     name: 'Fashion',
     i18nKey: 'catFashion',
     dbSlug: 'apparel',
+    image: '/apparel.jpg',
     bg: 'bg-orange-50',
     fg: 'text-orange-600',
     icon: (className) => (
@@ -51,6 +54,7 @@ export const CATEGORY_VISUALS = [
     name: 'Vehicles',
     i18nKey: 'catVehicles',
     dbSlug: 'vehicles',
+    image: '/vehicle.jpg',
     bg: 'bg-emerald-50',
     fg: 'text-emerald-600',
     icon: (className) => (
@@ -65,6 +69,7 @@ export const CATEGORY_VISUALS = [
     name: 'Books & Education',
     i18nKey: 'catBooks',
     dbSlug: 'books',
+    image: '/books.jpg',
     bg: 'bg-blue-50',
     fg: 'text-blue-600',
     icon: (className) => (
@@ -77,6 +82,7 @@ export const CATEGORY_VISUALS = [
     name: 'Tools & Equipment',
     i18nKey: 'catTools',
     dbSlug: 'tools',
+    image: '/tools.jpg',
     bg: 'bg-yellow-50',
     fg: 'text-yellow-700',
     icon: (className) => (
@@ -89,6 +95,7 @@ export const CATEGORY_VISUALS = [
     name: 'Jewelry',
     i18nKey: 'catJewelry',
     dbSlug: 'jewelry',
+    image: '/jewllery.jpg',
     bg: 'bg-rose-50',
     fg: 'text-rose-500',
     icon: (className) => (
@@ -103,6 +110,7 @@ export const CATEGORY_VISUALS = [
     name: 'Office & Business',
     i18nKey: 'catOffice',
     dbSlug: 'office',
+    image: '/office.jpg',
     bg: 'bg-stone-100',
     fg: 'text-stone-600',
     icon: (className) => (
