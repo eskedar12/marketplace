@@ -4,6 +4,24 @@ import { CONDITIONS } from '../../utils/formatters.js';
 import { CITIES, PRICE_RANGES } from '../../utils/constants.js';
 import { Input, Select } from '../common/Input.jsx';
 import { useLanguage } from '../../hooks/useLanguage.js';
+import { CATEGORY_VISUALS } from '../../utils/categoryIcons.jsx';
+
+// Categories come back from the API with their raw (English) `name`.
+// Every other category list in the app (homepage grid, navbar, create-
+// listing form) shows a translated label by matching the API category
+// to a CATEGORY_VISUALS entry and using its i18nKey — mirror that here
+// instead of rendering parent.name straight from the API, with the raw
+// name kept as a fallback for any category the backend adds that isn't
+// in CATEGORY_VISUALS yet.
+function categoryLabel(apiCat, t) {
+  const visual = CATEGORY_VISUALS.find(
+    (v) =>
+      v.dbSlug === apiCat.slug ||
+      apiCat.name.toLowerCase().includes(v.dbSlug.split('-')[0]) ||
+      v.name.toLowerCase() === apiCat.name.toLowerCase()
+  );
+  return visual ? t(`navbar.${visual.i18nKey}`) : apiCat.name;
+}
 
 export default function FilterBar({ filters, onChange }) {
   const { t } = useLanguage();
@@ -21,7 +39,7 @@ export default function FilterBar({ filters, onChange }) {
   // top-level categories — subcategories are left out entirely.
   const categoryOptions = categoryTree.map((parent) => ({
     value: parent.id,
-    label: parent.name,
+    label: categoryLabel(parent, t),
   }));
 
   const conditionOptions = CONDITIONS.map((c) => ({
