@@ -10,34 +10,28 @@ export default function HowToBuy() {
     <InfoPage
       crumbs={[{ label: t('footer.helpCenter'), to: '/help' }, { label: t('footer.howToBuy') }]}
       title={t('footer.howToBuy')}
-      intro="A quick walkthrough of buying an item on ReGebeya, from search to pickup."
+      intro={t('howToBuyPage.intro')}
     >
       <div className="space-y-6">
-        <InfoStep number="1" title="Search or browse a category">
-          Use the search bar or browse by category to find what you're looking for. Filter by city,
-          price, and condition to narrow things down.
+        <InfoStep number="1" title={t('howToBuyPage.step1Title')}>
+          {t('howToBuyPage.step1Body')}
         </InfoStep>
-        <InfoStep number="2" title="Check the listing carefully">
-          Look at all the photos, read the full description, and check the seller's profile and
-          rating before reaching out.
+        <InfoStep number="2" title={t('howToBuyPage.step2Title')}>
+          {t('howToBuyPage.step2Body')}
         </InfoStep>
-        <InfoStep number="3" title="Message the seller">
-          Ask any questions you have and confirm the item is still available before agreeing to
-          meet.
+        <InfoStep number="3" title={t('howToBuyPage.step3Title')}>
+          {t('howToBuyPage.step3Body')}
         </InfoStep>
-        <InfoStep number="4" title="Agree on a time and place">
-          Pick a public, well-lit location to meet — see our Safety Center for tips on meeting
-          safely.
+        <InfoStep number="4" title={t('howToBuyPage.step4Title')}>
+          {t('howToBuyPage.step4Body')}
         </InfoStep>
-        <InfoStep number="5" title="Inspect, pay, and collect">
-          Check the item in person before paying. Once you're happy with it, complete the payment
-          and take your item.
+        <InfoStep number="5" title={t('howToBuyPage.step5Title')}>
+          {t('howToBuyPage.step5Body')}
         </InfoStep>
       </div>
 
-      <InfoSection title="Need help with a purchase?">
-        If something doesn't go as planned, reach out to our support team or report the listing
-        directly from the item page.
+      <InfoSection title={t('howToBuyPage.needHelpTitle')}>
+        {t('howToBuyPage.needHelpBody')}
       </InfoSection>
     </InfoPage>
   );

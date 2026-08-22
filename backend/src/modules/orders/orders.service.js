@@ -5,6 +5,7 @@ const chapa = require('../../utils/chapa');
 const ordersRepository = require('./orders.repository');
 const listingsRepository = require('../listings/listings.repository');
 const usersRepository = require('../users/users.repository');
+const notificationsService = require('../notifications/notifications.service');
 
 // Called from either "Buy Now" (a single listing id) or the Cart page
 // (however many listing ids are checked out together). Either way it's
@@ -81,7 +82,29 @@ async function finalizeOrder(txRef) {
   }
 
   const { paid } = await chapa.verifyTransaction(txRef);
-  return paid ? ordersRepository.markPaid(txRef) : ordersRepository.markFailed(txRef);
+  if (!paid) return ordersRepository.markFailed(txRef);
+
+  const paidOrders = await ordersRepository.markPaid(txRef);
+  await notifySellersOfSale(paidOrders);
+  return paidOrders;
+}
+
+// One "your listing sold" notification per seller per item — a single
+// checkout can cover listings from several different sellers, so this
+// can fire more than one notification for one tx_ref.
+async function notifySellersOfSale(paidOrders) {
+  if (!paidOrders.length) return;
+  // Same buyer for every order under one tx_ref — fetch once.
+  const buyer = await usersRepository.findById(paidOrders[0].buyer_id);
+  for (const order of paidOrders) {
+    const listing = await listingsRepository.findById(order.listing_id);
+    await notificationsService.notify(order.seller_id, 'listing_sold', {
+      listingId: order.listing_id,
+      listingTitle: listing?.title,
+      buyerName: buyer?.name,
+      price: order.price,
+    });
+  }
 }
 
 async function verifyForBuyer(txRef, buyerId) {

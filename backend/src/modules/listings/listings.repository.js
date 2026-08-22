@@ -89,8 +89,24 @@ async function search({ q, category_id, condition, min_price, max_price, city, n
   let i = 1;
 
   if (q) {
-    conditions.push(`l.search_vector @@ plainto_tsquery('english', $${i++})`);
-    values.push(q);
+    // plainto_tsquery requires whole words after stemming (e.g. typing
+    // "coff" would never match "coffee" until the word is finished).
+    // For a search-as-you-type experience, build a prefix-matching
+    // tsquery instead: each word gets a `:*` prefix wildcard, and
+    // multiple words are ANDed together. Special tsquery characters
+    // are stripped from each term first so user input can't break the
+    // query syntax.
+    const prefixQuery = q
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((term) => term.replace(/[&|!():*']/g, '') + ':*')
+      .join(' & ');
+
+    if (prefixQuery) {
+      conditions.push(`l.search_vector @@ to_tsquery('english', $${i++})`);
+      values.push(prefixQuery);
+    }
   }
   if (condition) {
     conditions.push(`l.condition = $${i++}`);

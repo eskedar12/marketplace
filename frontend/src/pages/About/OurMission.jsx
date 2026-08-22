@@ -9,17 +9,17 @@ export default function OurMission() {
   return (
     <InfoPage
       title={t('footer.ourMission')}
-      intro="Making it easy for anyone in Ethiopia to buy and sell quality used goods, affordably and safely."
+      intro={t('ourMissionPage.intro')}
     >
-      <InfoSection title="Our mission">
-        [State your mission in one or two sentences — what problem you're solving and for whom.]
+      <InfoSection title={t('ourMissionPage.missionTitle')}>
+        {t('ourMissionPage.missionBody')}
       </InfoSection>
 
-      <InfoSection title="What we stand for">
+      <InfoSection title={t('ourMissionPage.valuesTitle')}>
         <ul className="list-disc pl-5 space-y-1">
-          <li>[Value 1 — e.g. Trust and safety between buyers and sellers]</li>
-          <li>[Value 2 — e.g. Affordable, sustainable second-hand shopping]</li>
-          <li>[Value 3 — e.g. Supporting local communities]</li>
+          <li>{t('ourMissionPage.value1')}</li>
+          <li>{t('ourMissionPage.value2')}</li>
+          <li>{t('ourMissionPage.value3')}</li>
         </ul>
       </InfoSection>
     </InfoPage>

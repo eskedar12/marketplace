@@ -1,6 +1,8 @@
 const ApiError = require('../../utils/ApiError');
 const ratingsRepository = require('./ratings.repository');
 const usersRepository = require('../users/users.repository');
+const listingsRepository = require('../listings/listings.repository');
+const notificationsService = require('../notifications/notifications.service');
 
 async function rateUser(raterId, { rated_user_id, listing_id, score, comment }) {
   if (raterId === rated_user_id) {
@@ -13,13 +15,26 @@ async function rateUser(raterId, { rated_user_id, listing_id, score, comment }) 
     throw ApiError.badRequest('Only sellers can be rated');
   }
 
-  return ratingsRepository.create({
+  const rating = await ratingsRepository.create({
     rater_id: raterId,
     rated_user_id,
     listing_id,
     score,
     comment,
   });
+
+  const [rater, listing] = await Promise.all([
+    usersRepository.findById(raterId),
+    listingsRepository.findById(listing_id),
+  ]);
+  await notificationsService.notify(rated_user_id, 'rating_received', {
+    raterName: rater?.name,
+    score,
+    listingId: listing_id,
+    listingTitle: listing?.title,
+  });
+
+  return rating;
 }
 
 async function getRatingsForUser(userId) {

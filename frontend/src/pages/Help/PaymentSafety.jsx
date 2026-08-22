@@ -11,37 +11,34 @@ export default function PaymentSafety() {
     <InfoPage
       crumbs={[{ label: t('footer.helpCenter'), to: '/help' }, { label: t('footer.paymentSafety') }]}
       title={t('footer.paymentSafety')}
-      intro="How payments work on ReGebeya, and how to keep your money and personal information safe."
+      intro={t('paymentSafetyPage.intro')}
     >
-      <InfoSection title="Accepted payment methods">
-        Cash on pickup, and [list any supported digital payment options — e.g. Chapa, bank
-        transfer, mobile money] once verified.
+      <InfoSection title={t('paymentSafetyPage.acceptedTitle')}>
+        {t('paymentSafetyPage.acceptedBody')}
       </InfoSection>
 
-      <InfoSection title="Before you pay">
+      <InfoSection title={t('paymentSafetyPage.beforeTitle')}>
         <ul className="list-disc pl-5 space-y-1">
-          <li>Always inspect the item in person before paying.</li>
-          <li>Never send money in advance for an item you haven't seen.</li>
-          <li>Avoid wiring money or sharing one-time codes with anyone.</li>
+          <li>{t('paymentSafetyPage.before1')}</li>
+          <li>{t('paymentSafetyPage.before2')}</li>
+          <li>{t('paymentSafetyPage.before3')}</li>
         </ul>
       </InfoSection>
 
-      <InfoSection title="Protecting your information">
-        Don't share your password, ID numbers, or bank PINs with anyone claiming to be from
-        ReGebeya — our team will never ask for these over chat.
+      <InfoSection title={t('paymentSafetyPage.protectingTitle')}>
+        {t('paymentSafetyPage.protectingBody')}
       </InfoSection>
 
-      <InfoSection title="Something feel off?">
-        If a buyer or seller asks you to pay outside the platform or pressures you to act quickly,
-        treat it as a red flag. See our{' '}
+      <InfoSection title={t('paymentSafetyPage.offTitle')}>
+        {t('paymentSafetyPage.offBefore')}
         <Link to="/safety" className="text-juniper font-medium hover:text-mustard">
           {t('footer.safetyCenter')}
-        </Link>{' '}
-        for more, or{' '}
+        </Link>
+        {t('paymentSafetyPage.offMiddle')}
         <Link to="/help/contact" className="text-juniper font-medium hover:text-mustard">
           {t('footer.contactSupport')}
         </Link>
-        .
+        {t('paymentSafetyPage.offAfter')}
       </InfoSection>
     </InfoPage>
   );

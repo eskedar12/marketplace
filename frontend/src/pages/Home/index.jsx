@@ -418,11 +418,10 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 flex items-center h-32 sm:h-40">
           {/* Photo — a real box of items, filling the left edge of the banner.
-              Fixed Unsplash photo (not a keyword-matched service) so the
-              same, on-theme image shows every time instead of whatever a
-              loose keyword search happens to return. */}
+              Served from /public so it loads instantly and never depends
+              on an external image host. */}
           <img
-            src="https://images.unsplash.com/photo-1647489238347-dbd651c2f37a?auto=format&fit=crop&w=600&h=250&q=80"
+            src="/basket.jpg"
             alt="A box of items ready to be given a new home"
             className="w-32 sm:w-56 md:w-72 h-full object-cover object-center flex-shrink-0"
           />

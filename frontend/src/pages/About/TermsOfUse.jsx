@@ -9,33 +9,30 @@ export default function TermsOfUse() {
   return (
     <InfoPage
       title={t('footer.termsOfUse')}
-      intro="Last updated: [date]" // TODO: replace with real last-updated date
+      intro={t('termsOfUsePage.lastUpdated')}
     >
-      <InfoSection title="1. Acceptance of terms">
-        By using ReGebeya, you agree to these terms. [Add details about what using the platform
-        means the user accepts.]
+      <InfoSection title={t('termsOfUsePage.section1Title')}>
+        {t('termsOfUsePage.section1Body')}
       </InfoSection>
 
-      <InfoSection title="2. Listings and accounts">
-        [Explain rules for creating listings and accounts — accurate info, one account per
-        person, prohibited items, etc.]
+      <InfoSection title={t('termsOfUsePage.section2Title')}>
+        {t('termsOfUsePage.section2Body')}
       </InfoSection>
 
-      <InfoSection title="3. Buying and selling">
-        [Explain that ReGebeya connects buyers and sellers but isn't a party to the transaction
-        between them, and any related liability limits.]
+      <InfoSection title={t('termsOfUsePage.section3Title')}>
+        {t('termsOfUsePage.section3Body')}
       </InfoSection>
 
-      <InfoSection title="4. Prohibited conduct">
-        [List things users may not do — fraud, harassment, posting illegal items, etc.]
+      <InfoSection title={t('termsOfUsePage.section4Title')}>
+        {t('termsOfUsePage.section4Body')}
       </InfoSection>
 
-      <InfoSection title="5. Changes to these terms">
-        [Explain how and when you may update these terms.]
+      <InfoSection title={t('termsOfUsePage.section5Title')}>
+        {t('termsOfUsePage.section5Body')}
       </InfoSection>
 
-      <InfoSection title="6. Contact">
-        Questions about these terms? Reach out via our Contact Support page.
+      <InfoSection title={t('termsOfUsePage.section6Title')}>
+        {t('termsOfUsePage.section6Body')}
       </InfoSection>
     </InfoPage>
   );

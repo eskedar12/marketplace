@@ -30,37 +30,37 @@ export default function ContactSupport() {
     <InfoPage
       crumbs={[{ label: t('footer.helpCenter'), to: '/help' }, { label: t('footer.contactSupport') }]}
       title={t('footer.contactSupport')}
-      intro="Have a question or ran into an issue? Send us a message and we'll get back to you."
+      intro={t('contactSupportPage.intro')}
     >
       <div className="grid sm:grid-cols-5 gap-8">
         <form onSubmit={handleSubmit} className="sm:col-span-3 space-y-4">
           {sent ? (
             <div className="p-4 rounded-xl bg-juniper/10 border border-juniper/30 text-sm font-body text-ink">
-              Thanks — your message has been sent. Our team will get back to you soon.
+              {t('contactSupportPage.sent')}
             </div>
           ) : (
             <>
               <Input
-                label="Name"
+                label={t('contactSupportPage.name')}
                 required
                 value={form.name}
                 onChange={(e) => update('name', e.target.value)}
               />
               <Input
-                label="Email"
+                label={t('contactSupportPage.email')}
                 type="email"
                 required
                 value={form.email}
                 onChange={(e) => update('email', e.target.value)}
               />
               <Input
-                label="Subject"
+                label={t('contactSupportPage.subject')}
                 required
                 value={form.subject}
                 onChange={(e) => update('subject', e.target.value)}
               />
               <Textarea
-                label="Message"
+                label={t('contactSupportPage.message')}
                 required
                 rows={5}
                 value={form.message}
@@ -74,7 +74,7 @@ export default function ContactSupport() {
         </form>
 
         <div className="sm:col-span-2">
-          <InfoSection title="Other ways to reach us">
+          <InfoSection title={t('contactSupportPage.otherWays')}>
             <ul className="space-y-2">
               <li>+251 91 123 4567</li>
               <li>hello@regebeya.com</li>

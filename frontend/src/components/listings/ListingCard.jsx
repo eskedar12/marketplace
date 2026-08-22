@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { formatPrice } from '../../utils/formatters.js';
-import { favoritesApi } from '../../api/listings.api.js';
-import { useAuth } from '../../hooks/useAuth.js';
 import { useLanguage } from '../../hooks/useLanguage.js';
 import { cityLabel } from '../../utils/constants.js';
 
@@ -21,28 +19,8 @@ function conditionBadge(condition, t) {
 }
 
 export default function ListingCard({ listing }) {
-  const { user } = useAuth();
-  const navigate = useNavigate();
   const { t } = useLanguage();
-  const [favorited, setFavorited] = useState(Boolean(listing.is_favorited));
-  const [busy, setBusy] = useState(false);
-
   const badge = conditionBadge(listing.condition, t);
-
-  function toggleFavorite(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-    if (busy) return;
-    setBusy(true);
-    const next = !favorited;
-    setFavorited(next); // optimistic
-    const call = next ? favoritesApi.add(listing.id) : favoritesApi.remove(listing.id);
-    call.catch(() => setFavorited(!next)).finally(() => setBusy(false));
-  }
 
   return (
     <Link
@@ -61,26 +39,6 @@ export default function ListingCard({ listing }) {
             {t('common.noPhoto')}
           </div>
         )}
-
-        <button
-          onClick={toggleFavorite}
-          aria-label={favorited ? t('listings.removeFromFavorites') : t('listings.addToFavorites')}
-          className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow-sm hover:scale-105 transition-transform"
-        >
-          <svg
-            className={`w-4 h-4 ${favorited ? 'text-clay' : 'text-ink/40'}`}
-            fill={favorited ? 'currentColor' : 'none'}
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 20.5s-7-4.35-9.5-8.5C.9 8.5 2.5 5 6 5c2 0 3.3 1.1 4 2.1C10.7 6.1 12 5 14 5c3.5 0 5.1 3.5 3.5 7-2.5 4.15-9.5 8.5-9.5 8.5z"
-            />
-          </svg>
-        </button>
       </div>
 
       <div className="p-3.5 space-y-1.5">

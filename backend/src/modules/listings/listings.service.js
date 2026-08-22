@@ -1,5 +1,7 @@
 const ApiError = require('../../utils/ApiError');
 const listingsRepository = require('./listings.repository');
+const cartRepository = require('../cart/cart.repository');
+const notificationsService = require('../notifications/notifications.service');
 
 async function createListing(sellerId, data) {
   return listingsRepository.create(sellerId, data);
@@ -28,7 +30,25 @@ async function updateListing(id, userId, updates) {
   if (listing.seller_id !== userId) {
     throw ApiError.forbidden('You can only edit your own listings');
   }
-  return listingsRepository.update(id, updates);
+
+  const isPriceDrop = updates.price !== undefined && Number(updates.price) < Number(listing.price);
+
+  const updated = await listingsRepository.update(id, updates);
+
+  if (isPriceDrop) {
+    // Anyone with this listing sitting in their cart gets pinged —
+    // fire-and-forget per user, same as every other notification call.
+    const cartUserIds = await cartRepository.findUserIdsByListing(id);
+    for (const cartUserId of cartUserIds) {
+      await notificationsService.notify(cartUserId, 'price_drop', {
+        listingId: id,
+        listingTitle: listing.title,
+        newPrice: updates.price,
+      });
+    }
+  }
+
+  return updated;
 }
 
 async function deleteListing(id, userId) {

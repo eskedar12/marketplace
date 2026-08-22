@@ -35,6 +35,13 @@ async function listByUser(userId) {
   return rows;
 }
 
+// Who to notify when a seller drops a listing's price — every user
+// currently holding this listing in their cart.
+async function findUserIdsByListing(listingId) {
+  const { rows } = await query('SELECT user_id FROM cart_items WHERE listing_id = $1', [listingId]);
+  return rows.map((r) => r.user_id);
+}
+
 async function removeByListingIds(userId, listingIds) {
   if (listingIds.length === 0) return;
   await query('DELETE FROM cart_items WHERE user_id = $1 AND listing_id = ANY($2::uuid[])', [
@@ -43,4 +50,4 @@ async function removeByListingIds(userId, listingIds) {
   ]);
 }
 
-module.exports = { add, remove, listByUser, removeByListingIds };
+module.exports = { add, remove, listByUser, findUserIdsByListing, removeByListingIds };

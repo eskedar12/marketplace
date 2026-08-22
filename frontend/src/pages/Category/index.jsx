@@ -8,6 +8,7 @@ import ListingGrid from '../../components/listings/ListingGrid.jsx';
 import Spinner from '../../components/common/Spinner.jsx';
 import Button from '../../components/common/Button.jsx';
 import { useLanguage } from '../../hooks/useLanguage.js';
+import { getCategoryDisplayName } from '../../utils/categoryIcons.jsx';
 
 // Dedicated browse page for a single category, linked from the
 // CategoryNav dropdown (and reachable directly at /category/:slug).
@@ -62,6 +63,9 @@ export default function CategoryPage() {
     );
   }
 
+  const categoryName = getCategoryDisplayName(category, t);
+  const parentName = category.parent ? getCategoryDisplayName(category.parent, t) : null;
+
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       {/* Breadcrumb */}
@@ -71,15 +75,15 @@ export default function CategoryPage() {
         {category.parent && (
           <>
             <Link to={`/category/${category.parent.slug}`} className="hover:text-mustard transition-colors">
-              {category.parent.name}
+              {parentName}
             </Link>
             <span>/</span>
           </>
         )}
-        <span className="text-ink/80 font-medium">{category.name}</span>
+        <span className="text-ink/80 font-medium">{categoryName}</span>
       </nav>
 
-      <h1 className="font-display font-extrabold text-2xl md:text-3xl text-ink">{category.name}</h1>
+      <h1 className="font-display font-extrabold text-2xl md:text-3xl text-ink">{categoryName}</h1>
       <p className="text-xs font-body text-ink/50 mt-1">{t('category.showingListings', { total })}</p>
 
       {/* Subcategory pill filters — only shown on a parent category page */}
@@ -93,7 +97,7 @@ export default function CategoryPage() {
                 : 'bg-white border border-line text-ink/70 hover:border-mustard/50'
             }`}
           >
-            {t('category.all', { name: category.name })}
+            {t('category.all', { name: categoryName })}
           </button>
           {category.subcategories.map((sub) => (
             <button
@@ -122,7 +126,7 @@ export default function CategoryPage() {
           <ListingGrid
             listings={items}
             loading={loading}
-            emptyTitle={t('category.noListingsYet', { name: category.name })}
+            emptyTitle={t('category.noListingsYet', { name: categoryName })}
             emptyHint={t('category.checkBackSoon')}
           />
 

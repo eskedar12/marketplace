@@ -9,20 +9,18 @@ export default function AboutUs() {
   return (
     <InfoPage
       title={t('footer.aboutUs')}
-      intro="ReGebeya is Ethiopia's trusted marketplace for buying and selling used items easily and safely."
+      intro={t('aboutUsPage.intro')}
     >
-      <InfoSection title="Who we are">
-        [Write a short story about the company — when it started, who's behind it, and why you
-        built ReGebeya.]
+      <InfoSection title={t('aboutUsPage.whoTitle')}>
+        {t('aboutUsPage.whoBody')}
       </InfoSection>
 
-      <InfoSection title="What we do">
-        We connect buyers and sellers across Ethiopia, making it simple to list an item, find a
-        good deal, and meet up to complete the exchange.
+      <InfoSection title={t('aboutUsPage.whatTitle')}>
+        {t('aboutUsPage.whatBody')}
       </InfoSection>
 
-      <InfoSection title="Where we're headed">
-        [Add anything about future plans, growth, or values you'd like visitors to know.]
+      <InfoSection title={t('aboutUsPage.whereTitle')}>
+        {t('aboutUsPage.whereBody')}
       </InfoSection>
     </InfoPage>
   );

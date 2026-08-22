@@ -45,3 +45,11 @@ export const favoritesApi = {
 export const reportsApi = {
   create: (listingId, reason) => axiosClient.post('/reports', { listing_id: listingId, reason }),
 };
+
+export const notificationsApi = {
+  // { notifications: [...], unreadCount: number }
+  getMine: () => axiosClient.get('/notifications'),
+  getUnreadCount: () => axiosClient.get('/notifications/unread-count'),
+  markRead: (id) => axiosClient.patch(`/notifications/${id}/read`),
+  markAllRead: () => axiosClient.patch('/notifications/read-all'),
+};

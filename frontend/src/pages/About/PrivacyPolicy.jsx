@@ -9,33 +9,30 @@ export default function PrivacyPolicy() {
   return (
     <InfoPage
       title={t('footer.privacyPolicy')}
-      intro="Last updated: [date]" // TODO: replace with real last-updated date
+      intro={t('privacyPolicyPage.lastUpdated')}
     >
-      <InfoSection title="1. Information we collect">
-        [List what you collect — account details, listing content, messages, location for city
-        filters, etc.]
+      <InfoSection title={t('privacyPolicyPage.section1Title')}>
+        {t('privacyPolicyPage.section1Body')}
       </InfoSection>
 
-      <InfoSection title="2. How we use your information">
-        [Explain how the data is used — e.g. to operate the marketplace, connect buyers and
-        sellers, improve the service.]
+      <InfoSection title={t('privacyPolicyPage.section2Title')}>
+        {t('privacyPolicyPage.section2Body')}
       </InfoSection>
 
-      <InfoSection title="3. Sharing your information">
-        [Explain what's shared with other users (e.g. your name and city on a listing) vs. what
-        stays private.]
+      <InfoSection title={t('privacyPolicyPage.section3Title')}>
+        {t('privacyPolicyPage.section3Body')}
       </InfoSection>
 
-      <InfoSection title="4. Data storage and security">
-        [Describe how data is stored and protected.]
+      <InfoSection title={t('privacyPolicyPage.section4Title')}>
+        {t('privacyPolicyPage.section4Body')}
       </InfoSection>
 
-      <InfoSection title="5. Your choices">
-        [Explain how users can update or delete their info, or close their account.]
+      <InfoSection title={t('privacyPolicyPage.section5Title')}>
+        {t('privacyPolicyPage.section5Body')}
       </InfoSection>
 
-      <InfoSection title="6. Contact">
-        Questions about this policy? Reach out via our Contact Support page.
+      <InfoSection title={t('privacyPolicyPage.section6Title')}>
+        {t('privacyPolicyPage.section6Body')}
       </InfoSection>
     </InfoPage>
   );

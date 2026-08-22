@@ -1,6 +1,7 @@
 const ApiError = require('../../utils/ApiError');
 const conversationsRepository = require('./conversations.repository');
 const listingsRepository = require('../listings/listings.repository');
+const messagesRepository = require('./messages/messages.repository');
 
 async function startConversation(buyerId, listingId) {
   const listing = await listingsRepository.findById(listingId);
@@ -29,4 +30,16 @@ async function getConversationsForUser(userId) {
   return conversationsRepository.listForUser(userId);
 }
 
-module.exports = { startConversation, getConversation, getConversationsForUser };
+// Total unread messages across every conversation this user is part of,
+// whether they're the buyer or the seller side — powers the badge on
+// the Messages nav icon (works the same for both roles).
+async function getUnreadMessageCount(userId) {
+  return messagesRepository.countUnreadForUser(userId);
+}
+
+module.exports = {
+  startConversation,
+  getConversation,
+  getConversationsForUser,
+  getUnreadMessageCount,
+};

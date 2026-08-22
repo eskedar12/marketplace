@@ -28,4 +28,20 @@ async function markRead(conversationId, readerId) {
   );
 }
 
-module.exports = { create, listByConversation, markRead };
+// Total unread messages across every conversation this user is part of
+// (as buyer or seller) — powers the badge on the Messages nav icon.
+// Only counts messages sent by the *other* person, same "unread" rule
+// markRead() uses per-conversation.
+async function countUnreadForUser(userId) {
+  const { rows } = await query(
+    `SELECT COUNT(*) FROM messages m
+     JOIN conversations c ON c.id = m.conversation_id
+     WHERE (c.buyer_id = $1 OR c.seller_id = $1)
+       AND m.sender_id != $1
+       AND m.read_at IS NULL`,
+    [userId]
+  );
+  return parseInt(rows[0].count, 10);
+}
+
+module.exports = { create, listByConversation, markRead, countUnreadForUser };

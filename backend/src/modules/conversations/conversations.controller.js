@@ -16,4 +16,9 @@ const getOne = asyncHandler(async (req, res) => {
   res.json({ success: true, data: conversation });
 });
 
-module.exports = { start, getMine, getOne };
+const getUnreadCount = asyncHandler(async (req, res) => {
+  const count = await conversationsService.getUnreadMessageCount(req.user.id);
+  res.json({ success: true, data: { count } });
+});
+
+module.exports = { start, getMine, getOne, getUnreadCount };

@@ -17,7 +17,14 @@ module.exports = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   rateLimit: {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 15 * 60 * 1000,
-    max: parseInt(process.env.RATE_LIMIT_MAX, 10) || 100,
+    // 100 was fine before the app added background polling (the
+    // notification bell + unread-messages badge each check in every
+    // 30s), but that alone is ~60 requests/15min per person just
+    // sitting idle — on top of normal browsing, a shared limit of 100
+    // for the *entire* API gets hit almost immediately. 1000 leaves
+    // real headroom for that plus normal use; override via
+    // RATE_LIMIT_MAX in production if you want it tighter.
+    max: parseInt(process.env.RATE_LIMIT_MAX, 10) || 1000,
   },
   // Not in `required` above — checked lazily in chapa.js at the moment a
   // checkout is actually attempted, so the rest of the app still boots
