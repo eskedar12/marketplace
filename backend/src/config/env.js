@@ -46,5 +46,9 @@ module.exports = {
   // it's been replaced by gemini-3.6-flash) — if this ever 404s with
   // "no longer available", check https://ai.google.dev/gemini-api/docs/models
   // for the current free-tier model name and update this default.
+  // NOTE: assistant.service.js's thinkingConfig uses `thinkingLevel`,
+  // which only Gemini 3.x models understand — if you point this at a
+  // Gemini 2.5 model instead, swap it for `thinkingBudget` (a number)
+  // or replies may silently ignore the thinking cap and truncate again.
   assistantModel: process.env.ASSISTANT_MODEL || 'gemini-3.6-flash',
 };

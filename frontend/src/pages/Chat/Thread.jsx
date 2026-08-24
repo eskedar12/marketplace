@@ -40,6 +40,21 @@ export default function Thread() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  // Same 30s-poll approach as NotificationBell — this app has no
+  // websocket/SSE layer, so "live" here means "checks periodically".
+  // A thread stays open a lot longer than the inbox does, so it polls
+  // faster (5s) than the notification bell's 30s. Silent on failure —
+  // a missed poll just means the next one catches it.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      conversationsApi
+        .getMessages(id)
+        .then((res) => setMessages(res.data))
+        .catch(() => {});
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [id]);
+
   // Once we know the conversation, check whether this buyer has already
   // rated the seller for this specific listing, so we can show that
   // review instead of a "Rate seller" button that would just 409.

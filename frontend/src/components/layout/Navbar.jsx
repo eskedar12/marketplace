@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useLanguage } from '../../hooks/useLanguage.js';
+import { useTheme } from '../../hooks/useTheme.js';
 import { CATEGORY_VISUALS } from '../../utils/categoryIcons.jsx';
 import Button from '../common/Button.jsx';
 import NotificationBell from './NotificationBell.jsx';
@@ -20,6 +21,42 @@ const QUICK_LINKS = [
   { key: 'vehicles', name: 'Vehicles' },
   { key: 'catFurniture', name: 'Furniture & Home' },
 ];
+
+// Sun/moon toggle — same visual language as NavIconLink (icon button,
+// hover state) but a plain <button> since it doesn't navigate anywhere,
+// just flips the .dark class via ThemeContext.
+function ThemeToggle() {
+  const { theme, toggleTheme } = useTheme();
+  const { t } = useLanguage();
+  const isDark = theme === 'dark';
+
+  return (
+    <button
+      onClick={toggleTheme}
+      title={isDark ? t('navbar.lightMode') : t('navbar.darkMode')}
+      aria-label={isDark ? t('navbar.lightMode') : t('navbar.darkMode')}
+      className="relative p-2 text-ink/70 hover:text-mustard hover:bg-mustard/5 rounded-lg transition-colors"
+    >
+      {isDark ? (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+          />
+        </svg>
+      ) : (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"
+          />
+        </svg>
+      )}
+    </button>
+  );
+}
 
 // Compact language switcher — a button showing the current language's
 // native label, with a dropdown to pick one of the other three.
@@ -340,6 +377,7 @@ export default function Navbar() {
             </Button>
           )}
 
+          <ThemeToggle />
           <LanguageSwitcher />
         </div>
       </div>

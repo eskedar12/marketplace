@@ -3,16 +3,108 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* R G B triplets (space-separated, no #) — not plain hex — because
+       the codebase uses opacity modifiers on these everywhere (text-ink/70,
+       bg-juniper/10, etc.). Tailwind can only compute that alpha blend
+       when the variable holds raw channels for its rgb(var(...) /
+       <alpha-value>) pattern in tailwind.config.js; a plain hex or
+       var() string breaks every /NN usage silently. */
+    --color-paper: 250 249 246;
+    --color-ink: 15 23 42;
+    --color-line: 226 232 240;
+    --color-surface: 255 255 255;
+    --color-juniper: 15 44 89;
+    --color-juniper-dark: 11 30 63;
+    --color-juniper-light: 35 73 127;
+  }
+
+  /* Same palette, re-tuned for a dark background: paper goes from
+     off-white to a deep navy-black (keeping the brand's "juniper" navy
+     feel rather than going neutral-black), ink flips to a soft
+     off-white (not pure white — easier on the eyes over large areas),
+     and juniper itself gets lighter so buttons/links keep working
+     against a now-dark page instead of going nearly invisible. */
+  .dark {
+    --color-paper: 11 18 32;
+    --color-ink: 231 233 238;
+    --color-line: 38 51 73;
+    --color-surface: 18 27 46;
+    --color-juniper: 90 129 184;
+    --color-juniper-dark: 63 95 143;
+    --color-juniper-light: 143 176 222;
+  }
+
   body {
     @apply bg-paper text-ink font-body antialiased;
+    transition: background-color 0.15s ease, color 0.15s ease;
   }
   h1, h2, h3, h4 {
     @apply font-display text-ink;
   }
   :focus-visible {
-    outline: 2px solid theme('colors.juniper.DEFAULT');
+    outline: 2px solid rgb(var(--color-juniper));
     outline-offset: 2px;
   }
+
+  /* --- Dark-mode overrides for hardcoded utility classes ---
+     The rest of the app was written against a light theme and uses
+     `bg-white` directly (not `bg-paper`) for card/dropdown/input
+     surfaces, plus a handful of raw Tailwind status colors (emerald/
+     amber/rose/etc.) for badges and alert boxes. Rather than editing
+     every one of those call sites, the exact classes in use are
+     re-pointed here under `.dark` — same class names in JSX, different
+     resolved color when the theme is dark. Anything using an opacity
+     modifier (bg-white/10, bg-white/85, etc.) is a translucent overlay
+     on a colored/photo background, not a card surface, so those are
+     deliberately left alone. */
+  .dark .bg-white,
+  .dark .hover\:bg-white:hover,
+  .dark .focus-within\:bg-white:focus-within {
+    background-color: rgb(var(--color-surface));
+  }
+
+  .dark .bg-slate-50,
+  .dark .bg-slate-100,
+  .dark .bg-gray-100,
+  .dark .bg-stone-100 {
+    background-color: rgba(148, 163, 184, 0.1);
+  }
+  .dark .border-slate-100,
+  .dark .border-slate-200,
+  .dark .border-slate-300 {
+    border-color: rgb(var(--color-line));
+  }
+  .dark .hover\:bg-slate-100:hover {
+    background-color: rgba(148, 163, 184, 0.16);
+  }
+  .dark .text-slate-400,
+  .dark .text-gray-500,
+  .dark .text-stone-600,
+  .dark .placeholder-slate-400::placeholder {
+    color: #94A3B8;
+  }
+
+  .dark .bg-emerald-50 { background-color: rgba(52, 211, 153, 0.12); }
+  .dark .text-emerald-600,
+  .dark .text-emerald-700 { color: #6EE7B7; }
+
+  .dark .bg-amber-50,
+  .dark .to-amber-50 { background-color: rgba(251, 191, 36, 0.12); }
+  .dark .text-amber-700 { color: #FCD34D; }
+
+  .dark .bg-yellow-50 { background-color: rgba(250, 204, 21, 0.12); }
+  .dark .text-yellow-700 { color: #FDE047; }
+
+  .dark .bg-rose-50 { background-color: rgba(251, 113, 133, 0.12); }
+  .dark .text-rose-500 { color: #FB7185; }
+
+  .dark .bg-red-50 { background-color: rgba(248, 113, 113, 0.12); }
+  .dark .text-red-600 { color: #F87171; }
+  .dark .border-red-200 { border-color: rgba(248, 113, 113, 0.35); }
+
+  .dark .bg-blue-50 { background-color: rgba(96, 165, 250, 0.12); }
+  .dark .text-blue-600 { color: #60A5FA; }
 }
 
 @layer components {
@@ -29,8 +121,8 @@
     width: 9px;
     height: 9px;
     border-radius: 9999px;
-    background: theme('colors.paper');
-    border: 1.5px solid theme('colors.ink');
+    background: rgb(var(--color-paper));
+    border: 1.5px solid rgb(var(--color-ink));
   }
   .condition-stamp {
     @apply font-mono text-[10px] uppercase tracking-widest px-2 py-1 border border-ink/70;

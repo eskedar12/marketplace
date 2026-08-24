@@ -1,22 +1,34 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
       colors: {
-        paper: '#FAF9F6',
-        ink: '#0F172A',
+        // paper/ink/line/juniper are backed by CSS variables holding raw
+        // "R G B" triplets (defined in globals.css: light under :root,
+        // dark under .dark), wrapped in rgb(... / <alpha-value>) so
+        // Tailwind's opacity modifiers (text-ink/70, bg-juniper/10, etc.
+        // — used ~130 times across the app) keep working. A plain hex
+        // or bare var() string can't compute that alpha blend. Every
+        // existing bg-paper / text-ink / border-line / bg-juniper class
+        // across the app automatically re-themes when <html> gets the
+        // .dark class — no component files need to change. mustard and
+        // clay stay static hex: both are vivid enough to read fine on
+        // either background.
+        paper: 'rgb(var(--color-paper) / <alpha-value>)',
+        ink: 'rgb(var(--color-ink) / <alpha-value>)',
+        line: 'rgb(var(--color-line) / <alpha-value>)',
         juniper: {
-          DEFAULT: '#0F2C59',
-          dark: '#0B1E3F',
-          light: '#23497F',
+          DEFAULT: 'rgb(var(--color-juniper) / <alpha-value>)',
+          dark: 'rgb(var(--color-juniper-dark) / <alpha-value>)',
+          light: 'rgb(var(--color-juniper-light) / <alpha-value>)',
         },
         mustard: {
           DEFAULT: '#FF6B35',
           dark: '#E04F1A',
         },
         clay: '#E11D48',
-        line: '#E2E8F0',
       },
       fontFamily: {
         display: ['"Space Grotesk"', 'sans-serif'],

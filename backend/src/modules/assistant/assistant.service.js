@@ -70,18 +70,30 @@ function buildSystemPrompt(page, pageDetails, language) {
     );
   }
 
+  // Every page on the site, not just the one they're currently on — so a
+  // question like "how do I sell something?" asked from the homepage, or
+  // "how do I get my money" asked from a listing page, still gets a real
+  // answer instead of "I can only help with this page."
+  const siteMap = Object.entries(PAGE_DESCRIPTIONS)
+    .filter(([key]) => key !== 'notFound')
+    .map(([, desc]) => `- ${desc}`)
+    .join('\n');
+
   return `You are the built-in help assistant for ReGebeya, an Ethiopian online classifieds marketplace (electronics, furniture, fashion, vehicles, books, tools, jewelry, office supplies, and more). You appear as a small chat widget in the corner of the page.
+
+Here is every page on the site, so you can answer questions about parts of the site the user isn't currently looking at:
+${siteMap}
 
 The user is currently on: ${pageDesc}
 ${details.join(' ')}
 
-Your job is to help them understand and use *this page* and the site in general — what things on it do, how to complete common tasks (posting a listing, checking out, messaging a seller, editing their profile, etc.), and general questions about how the marketplace works.
+Your job is to help them understand and use *any part of the site* — what things do, how to complete common tasks (posting a listing, checking out, messaging a seller, editing their profile, rating a seller, etc.), and general questions about how the marketplace works — not just the page they happen to be on right now.
 
 Rules:
 - Answer in ${LANGUAGE_NAMES[language] || 'English'}.
 - Keep answers short — 1-3 sentences, chat-widget length, not an essay.
 - You don't have access to the user's account, orders, or messages — if asked something account-specific, say you can't see that and point them to the relevant page instead of guessing.
-- You can't click anything or navigate for them — only describe what to do.
+- You can't click anything or navigate for them — only describe what to do and, if relevant, which page to go to.
 - If asked something unrelated to the marketplace, briefly say that's outside what you can help with here.
 - Never invent prices, policies, or features that weren't described to you above.`;
 }
@@ -108,13 +120,33 @@ async function ask({ message, page, pageDetails, language, history }) {
     body: JSON.stringify({
       contents,
       systemInstruction: { parts: [{ text: buildSystemPrompt(page, pageDetails, language) }] },
-      generationConfig: { maxOutputTokens: 300 },
+      generationConfig: {
+        maxOutputTokens: 800,
+        // Gemini 3 models "think" before answering by default, and that
+        // thinking is deducted from the SAME maxOutputTokens budget as the
+        // visible reply — with a low token cap and no thinking control,
+        // the model can burn its entire budget thinking and leave nothing
+        // (or a truncated fragment) for the actual answer. This widget
+        // needs short, fast FAQ-style replies, not deep reasoning, so
+        // thinking is capped to 'low' rather than left at its default.
+        thinkingConfig: { thinkingLevel: 'low' },
+      },
     }),
   });
 
   if (!res.ok) {
     const body = await res.text().catch(() => '');
     logger.error(`Assistant: Gemini API returned ${res.status}`, body);
+
+    if (res.status === 429) {
+      // Distinguish "we're out of quota" from a genuine outage — this is
+      // by far the most common failure on the free tier, and the generic
+      // message left people thinking the feature was broken.
+      throw ApiError.internal(
+        'The assistant has hit its usage limit for now — please try again in a minute.'
+      );
+    }
+
     throw ApiError.internal('The assistant is temporarily unavailable — please try again shortly.');
   }
 
