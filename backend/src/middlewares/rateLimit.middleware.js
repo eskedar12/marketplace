@@ -43,4 +43,17 @@ const assistantLimiter = isProd
     })
   : (req, res, next) => next();
 
-module.exports = { apiLimiter, authLimiter, assistantLimiter };
+// Stricter limiter for the Contact Support form — each submission sends
+// a real email, so this gets its own tight budget to keep it from being
+// used to spam your inbox.
+const supportLimiter = isProd
+  ? rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 5,
+      standardHeaders: true,
+      legacyHeaders: false,
+      message: { success: false, message: 'Too many messages sent, please try again later.' },
+    })
+  : (req, res, next) => next();
+
+module.exports = { apiLimiter, authLimiter, assistantLimiter, supportLimiter };

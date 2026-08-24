@@ -51,4 +51,17 @@ module.exports = {
   // Gemini 2.5 model instead, swap it for `thinkingBudget` (a number)
   // or replies may silently ignore the thinking cap and truncate again.
   assistantModel: process.env.ASSISTANT_MODEL || 'gemini-3.6-flash',
+  // Not in `required` above — checked lazily in support.service.js at the
+  // moment someone actually submits the Contact Support form, so the rest
+  // of the app still boots fine before it's configured. Get a free key
+  // (no credit card, no domain needed to start) at https://resend.com/api-keys.
+  resendApiKey: process.env.RESEND_API_KEY,
+  // The inbox that Contact Support submissions get forwarded to — set
+  // this to your own address.
+  supportInboxEmail: process.env.SUPPORT_INBOX_EMAIL,
+  // The "from" address Resend sends as. Defaults to Resend's own shared
+  // sandbox address, which works immediately with no setup — swap in
+  // something like support@yourdomain.com once you've verified a domain
+  // at https://resend.com/domains.
+  supportFromEmail: process.env.SUPPORT_FROM_EMAIL || 'onboarding@resend.dev',
 };

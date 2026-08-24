@@ -315,6 +315,7 @@ export const translations = {
     contactSupportPage: {
       intro: "Have a question or ran into an issue? Send us a message and we'll get back to you.",
       sent: "Thanks — your message has been sent. Our team will get back to you soon.",
+      error: "Something went wrong sending your message — please try again.",
       name: 'Name',
       email: 'Email',
       subject: 'Subject',
@@ -809,6 +810,7 @@ export const translations = {
     contactSupportPage: {
       intro: 'ጥያቄ አለዎት ወይም ችግር አጋጥሞዎታል? መልእክት ይላኩልንና እንመልስልዎታለን።',
       sent: 'እናመሰግናለን — መልእክትዎ ተልኳል። ቡድናችን በቅርቡ ይመልስልዎታል።',
+      error: 'መልእክትዎን በመላክ ላይ ችግር ተፈጥሯል — እባክዎ እንደገና ይሞክሩ።',
       name: 'ስም',
       email: 'ኢሜይል',
       subject: 'ርዕስ',
@@ -1303,6 +1305,7 @@ export const translations = {
     contactSupportPage: {
       intro: 'ሕቶ ኣለኩም ወይ ጸገም ኣጋጢሙኩም ድዩ? መልእኽቲ ስደዱልናን ክንምልሰልኩም ኢና።',
       sent: 'የቐንየልና — መልእኽትኹም ተላኢኹ ኣሎ። ጋንታና ኣብ ቀረባ ግዜ ክምልሰልኩም እዩ።',
+      error: 'መልእኽትኹም ኣብ ምስዳድ ጸገም ኣጋጢሙ — በጃኹም ደጊምኩም ፈትኑ።',
       name: 'ስም',
       email: 'ኢመይል',
       subject: 'ኣርእስቲ',
@@ -1797,6 +1800,7 @@ export const translations = {
     contactSupportPage: {
       intro: 'Gaaffii qabdaa moo rakkoo mudatee? Ergaa nuu ergi, deebii siif kennina.',
       sent: 'Galatoomi — ergaan kee ergameera. Gareen keenya dhiyootti deebii siif kenna.',
+      error: 'Ergaa kee erguu keessatti rakkoon uumameera — maaloo irra deebi\'ii yaali.',
       name: 'Maqaa',
       email: 'Imeelii',
       subject: 'Mata duree',

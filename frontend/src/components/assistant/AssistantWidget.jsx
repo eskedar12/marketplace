@@ -57,7 +57,7 @@ export default function AssistantWidget() {
     <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
       {open && (
         <div className="mb-3 w-[340px] max-w-[calc(100vw-2.5rem)] h-[440px] bg-white rounded-2xl shadow-2xl border border-line flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 bg-ink text-white shrink-0">
+          <div className="flex items-center justify-between px-4 py-3 bg-slate-900 text-white shrink-0">
             <div>
               <p className="font-display font-700 text-sm">{t('assistant.title')}</p>
               <p className="text-[11px] text-white/60 font-body">{t('assistant.subtitle')}</p>
@@ -128,7 +128,7 @@ export default function AssistantWidget() {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? t('assistant.close') : t('assistant.open')}
-        className="w-[52px] h-[52px] rounded-full bg-ink text-white shadow-xl flex items-center justify-center hover:bg-ink/90 transition-colors"
+        className="w-[52px] h-[52px] rounded-full bg-slate-900 text-white shadow-xl flex items-center justify-center hover:bg-slate-900/90 transition-colors"
       >
         {open ? (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">

@@ -68,7 +68,7 @@ const SOCIALS = [
 export default function Footer() {
   const { t } = useLanguage();
   return (
-    <footer className="bg-ink mt-20">
+    <footer className="bg-slate-900 mt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8">
           {/* Brand */}

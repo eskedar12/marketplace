@@ -3,15 +3,17 @@ import InfoPage, { InfoSection } from '../../components/common/InfoPage.jsx';
 import { Input, Textarea } from '../../components/common/Input.jsx';
 import Button from '../../components/common/Button.jsx';
 import { useLanguage } from '../../hooks/useLanguage.js';
+import { supportApi } from '../../api/support.api.js';
 
-// TODO: replace placeholder contact details with real info, and wire
-// handleSubmit up to a real support endpoint / email service — right
-// now it just shows a local "sent" confirmation.
+// TODO: replace placeholder contact details (phone/address in the
+// "Other ways to reach us" panel) with real info — the form itself
+// now sends to the backend, which emails SUPPORT_INBOX_EMAIL via Resend.
 export default function ContactSupport() {
   const { t } = useLanguage();
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -20,10 +22,15 @@ export default function ContactSupport() {
   async function handleSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
-    // TODO: replace with a real API call, e.g. supportApi.sendMessage(form)
-    await new Promise((r) => setTimeout(r, 400));
-    setSubmitting(false);
-    setSent(true);
+    setError('');
+    try {
+      await supportApi.contact(form);
+      setSent(true);
+    } catch (err) {
+      setError(err.message || t('contactSupportPage.error'));
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -66,6 +73,11 @@ export default function ContactSupport() {
                 value={form.message}
                 onChange={(e) => update('message', e.target.value)}
               />
+              {error && (
+                <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-sm font-body text-red-600">
+                  {error}
+                </div>
+              )}
               <Button type="submit" disabled={submitting}>
                 {submitting ? t('common.saving') : t('common.send')}
               </Button>

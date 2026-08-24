@@ -216,7 +216,7 @@ export default function Home() {
       <section className="relative overflow-hidden min-h-[520px] md:min-h-[640px]">
         <div
           key={heroImageUrl}
-          className="absolute inset-0 transition-opacity duration-500 bg-ink"
+          className="absolute inset-0 transition-opacity duration-500 bg-slate-900"
           style={{
             backgroundImage: `url('${heroImageUrl}')`,
             backgroundSize: 'cover',
@@ -226,7 +226,7 @@ export default function Home() {
         />
         {/* Light, uniform dark wash — just enough for text contrast,
             without hiding the actual category photo underneath. */}
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/45 to-ink/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/45 to-black/30" />
 
         <div className="relative z-10 px-4 sm:px-8 md:px-16 py-20 md:py-28 min-h-[520px] md:min-h-[640px] flex flex-col justify-center max-w-3xl text-left">
           {activeCategory && (
@@ -416,7 +416,7 @@ export default function Home() {
 
       {/* 5. CTA banner */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 flex items-center h-32 sm:h-40">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#FFF7ED] to-[#FFFBEB] border border-[#FFEDD5] flex items-center h-32 sm:h-40">
           {/* Photo — a real box of items, filling the left edge of the banner.
               Served from /public so it loads instantly and never depends
               on an external image host. */}
@@ -428,7 +428,7 @@ export default function Home() {
 
           <div className="flex-1 flex items-center justify-between gap-4 sm:gap-6 px-4 sm:px-8 h-full relative z-10">
             <div>
-              <p className="font-display font-extrabold text-base sm:text-2xl text-ink leading-snug">
+              <p className="font-display font-extrabold text-base sm:text-2xl text-[#0F172A] leading-snug">
                 {t('home.ctaLine1')}
               </p>
               <p className="font-display font-extrabold text-base sm:text-2xl text-mustard leading-snug">
