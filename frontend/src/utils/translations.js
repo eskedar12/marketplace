@@ -482,6 +482,17 @@ export const translations = {
       'pet-supplies': 'Pet Supplies',
       collectibles: 'Collectibles',
     },
+    assistant: {
+      title: 'Page Assistant',
+      subtitle: "Ask me about this page",
+      welcome: "Hi! I can help explain what's on this page or how to use it — ask me anything.",
+      placeholder: 'Ask a question…',
+      thinking: 'Thinking…',
+      error: 'Something went wrong — please try again.',
+      open: 'Open help assistant',
+      close: 'Close help assistant',
+      send: 'Send',
+    },
   },
 
   am: {
@@ -962,6 +973,17 @@ export const translations = {
       'musical-instruments': 'የሙዚቃ መሳሪያዎች',
       'pet-supplies': 'የቤት እንስሳት ቁሳቁሶች',
       collectibles: 'የስብስብ እቃዎች',
+    },
+    assistant: {
+      title: 'የገጽ ረዳት',
+      subtitle: 'ስለዚህ ገጽ ጠይቀኝ',
+      welcome: 'ሰላም! በዚህ ገጽ ላይ ያለውን ወይም እንዴት እንደሚጠቀሙበት ልገልጽልዎት እችላለሁ — ማንኛውንም ነገር ይጠይቁኝ።',
+      placeholder: 'ጥያቄ ይጻፉ…',
+      thinking: 'እያሰብኩ ነው…',
+      error: 'የሆነ ችግር ተከስቷል — እባክዎ እንደገና ይሞክሩ።',
+      open: 'የገጽ ረዳት ክፈት',
+      close: 'የገጽ ረዳት ዝጋ',
+      send: 'ላክ',
     },
   },
 
@@ -1444,6 +1466,17 @@ export const translations = {
       'pet-supplies': 'ኣቕሑ እንስሳት ገዛ',
       collectibles: 'ኣቕሑ ስብስብ',
     },
+    assistant: {
+      title: 'ረዳት ገጽ',
+      subtitle: 'ብዛዕባ እዚ ገጽ ሕተተኒ',
+      welcome: 'ሰላም! ኣብዚ ገጽ እንታይ ከምዘሎ ወይ ከመይ ገይርካ ትጥቀመሉ ክገልጸልካ እኽእል እየ — ዝኾነ ሕተተኒ።',
+      placeholder: 'ሕቶ ጻፍ…',
+      thinking: 'ይሓስብ ኣሎ…',
+      error: 'ጌጋ ተፈጢሩ — በጃኻ ደጊምካ ፈትን።',
+      open: 'ረዳት ገጽ ክፈት',
+      close: 'ረዳት ገጽ ዕጸው',
+      send: 'ስደድ',
+    },
   },
 
   om: {
@@ -1924,6 +1957,17 @@ export const translations = {
       'musical-instruments': 'Meeshaalee Muuziqaa',
       'pet-supplies': 'Meeshaalee Beyladaa Manaa',
       collectibles: 'Meeshaalee Walitti Qabamoo',
+    },
+    assistant: {
+      title: 'Gargaaraa Fuula',
+      subtitle: 'Waa\'ee fuula kanaa na gaafadhu',
+      welcome: 'Akkam! Waan fuula kana irra jiru yookaan akkaataa itti fayyadamtu sirratti hima — waan barbaadde na gaafadhu.',
+      placeholder: 'Gaaffii barreessi…',
+      thinking: 'Yaadaan jira…',
+      error: "Dogoggorri uumameera — maaloo irra deebi'ii yaali.",
+      open: 'Gargaaraa fuula bani',
+      close: 'Gargaaraa fuula cufi',
+      send: 'Ergi',
     },
   },
 };

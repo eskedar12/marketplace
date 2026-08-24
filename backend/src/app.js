@@ -17,6 +17,7 @@ const reportsRoutes = require('./modules/reports/reports.routes');
 const cartRoutes = require('./modules/cart/cart.routes');
 const ordersRoutes = require('./modules/orders/orders.routes');
 const notificationsRoutes = require('./modules/notifications/notifications.routes');
+const assistantRoutes = require('./modules/assistant/assistant.routes');
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use(`${API_PREFIX}/reports`, reportsRoutes);
 app.use(`${API_PREFIX}/cart`, cartRoutes);
 app.use(`${API_PREFIX}/orders`, ordersRoutes);
 app.use(`${API_PREFIX}/notifications`, notificationsRoutes);
+app.use(`${API_PREFIX}/assistant`, assistantRoutes);
 
 // ---- 404 for unmatched routes ----
 app.use((req, res) => {

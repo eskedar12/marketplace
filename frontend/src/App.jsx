@@ -3,6 +3,7 @@ import Navbar from './components/layout/Navbar.jsx';
 import Footer from './components/layout/Footer.jsx';
 import AppRouter from './routes/AppRouter.jsx';
 import ScrollToTop from './components/common/ScrollToTop.jsx';
+import AssistantWidget from './components/assistant/AssistantWidget.jsx';
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
         <AppRouter />
       </main>
       <Footer />
+      <AssistantWidget />
     </div>
   );
 }

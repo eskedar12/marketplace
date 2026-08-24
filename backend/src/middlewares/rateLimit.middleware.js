@@ -30,4 +30,17 @@ const authLimiter = isProd
     })
   : (req, res, next) => next();
 
-module.exports = { apiLimiter, authLimiter };
+// Stricter limiter for the AI page-assistant — each request costs a real
+// API call, unlike everything else in the app, so this gets its own tighter
+// budget rather than sharing the general apiLimiter's headroom.
+const assistantLimiter = isProd
+  ? rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 30,
+      standardHeaders: true,
+      legacyHeaders: false,
+      message: { success: false, message: 'Too many assistant requests, please slow down.' },
+    })
+  : (req, res, next) => next();
+
+module.exports = { apiLimiter, authLimiter, assistantLimiter };

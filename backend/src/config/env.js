@@ -35,4 +35,16 @@ module.exports = {
   // dev works out of the box; override both in production.
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
   apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:5000',
+  // Not in `required` above — checked lazily in assistant.service.js at
+  // the moment someone actually opens the chat widget, so the rest of
+  // the app still boots fine before it's configured. Get a free key
+  // (no credit card needed) at https://aistudio.google.com/apikey.
+  geminiApiKey: process.env.GEMINI_API_KEY,
+  // Flash models are the ones covered by Gemini's free tier — Pro
+  // models are paid-only. Google retires old model names over time
+  // (gemini-2.5-flash was the default here originally; as of writing
+  // it's been replaced by gemini-3.6-flash) — if this ever 404s with
+  // "no longer available", check https://ai.google.dev/gemini-api/docs/models
+  // for the current free-tier model name and update this default.
+  assistantModel: process.env.ASSISTANT_MODEL || 'gemini-3.6-flash',
 };
