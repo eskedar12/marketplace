@@ -46,7 +46,10 @@ async function markPaid(txRef) {
 
     if (orders.length > 0) {
       const listingIds = orders.map((o) => o.listing_id);
-      await client.query(`UPDATE listings SET status = 'sold' WHERE id = ANY($1::uuid[])`, [listingIds]);
+      await client.query(
+        `UPDATE listings SET status = 'sold', reserved_until = NULL WHERE id = ANY($1::uuid[])`,
+        [listingIds]
+      );
       await client.query(`DELETE FROM cart_items WHERE listing_id = ANY($1::uuid[])`, [listingIds]);
     }
 

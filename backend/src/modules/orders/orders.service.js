@@ -31,21 +31,39 @@ async function checkout(buyerId, listingIds) {
   }
 
   const buyer = await usersRepository.findById(buyerId);
-  const total = listings.reduce((sum, l) => sum + Number(l.price), 0);
   const txRef = `regebeya-${crypto.randomUUID()}`;
   const [firstName, ...rest] = (buyer.name || 'Buyer').split(' ');
 
   const client = await pool.connect();
+  let reserved;
   try {
     await client.query('BEGIN');
-    await ordersRepository.createPendingOrders(client, buyerId, txRef, listings);
+    // Authoritative check: the lookup above can be stale by the time we
+    // get here, so re-verify + lock atomically. If someone else's
+    // checkout reserved one of these listings a moment ago, it won't
+    // come back in `reserved` and we bail out below. Using the price on
+    // these rows (not the pre-check ones above) also protects against
+    // a seller editing the price in between.
+    reserved = await listingsRepository.reserveForCheckout(client, uniqueIds);
+    if (reserved.length !== uniqueIds.length) {
+      await client.query('ROLLBACK');
+      throw ApiError.badRequest(
+        'One or more items were just reserved or sold by someone else — please refresh and try again'
+      );
+    }
+    await ordersRepository.createPendingOrders(client, buyerId, txRef, reserved);
     await client.query('COMMIT');
   } catch (err) {
-    await client.query('ROLLBACK');
+    // Safe to call even if we already rolled back above (or never
+    // started the reservation branch) — ROLLBACK with no transaction
+    // in progress is a harmless no-op, not an error.
+    await client.query('ROLLBACK').catch(() => {});
     throw err;
   } finally {
     client.release();
   }
+
+  const total = reserved.reduce((sum, l) => sum + Number(l.price), 0);
 
   try {
     const { checkoutUrl } = await chapa.initializeTransaction({
@@ -56,15 +74,18 @@ async function checkout(buyerId, listingIds) {
       tx_ref: txRef,
       title: 'ReGebeya',
       description:
-        listings.length === 1
-          ? listings[0].title
-          : `${listings.length} items from ReGebeya`,
+        reserved.length === 1
+          ? reserved[0].title
+          : `${reserved.length} items from ReGebeya`,
     });
     return { checkoutUrl, txRef, total };
   } catch (err) {
     // Payment never actually started — don't leave orphaned pending
-    // orders sitting in the buyer's history.
+    // orders sitting in the buyer's history, and release the
+    // reservation so the listing is buyable again immediately instead
+    // of waiting out the 20-minute expiry.
     await ordersRepository.deleteByTxRef(txRef);
+    await listingsRepository.releaseReservation(uniqueIds);
     throw err;
   }
 }
@@ -82,7 +103,11 @@ async function finalizeOrder(txRef) {
   }
 
   const { paid } = await chapa.verifyTransaction(txRef);
-  if (!paid) return ordersRepository.markFailed(txRef);
+  if (!paid) {
+    const failed = await ordersRepository.markFailed(txRef);
+    await listingsRepository.releaseReservation(failed.map((o) => o.listing_id));
+    return failed;
+  }
 
   const paidOrders = await ordersRepository.markPaid(txRef);
   await notifySellersOfSale(paidOrders);

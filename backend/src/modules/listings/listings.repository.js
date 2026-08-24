@@ -252,4 +252,55 @@ async function findManyByIds(ids) {
   return rows;
 }
 
-module.exports = { create, findById, findManyByIds, search, update, softRemove, findByUser, getSellerPhone };
+// Atomically flips listings from available -> reserved for checkout.
+// The WHERE clause is what actually prevents overselling: if two
+// checkouts race for the same listing, only the first UPDATE can match
+// 'active' — by the time the second one runs, status is already
+// 'pending_sale' and its own row falls out of the result set. The
+// second half of the WHERE clause (an expired reservation) lets an
+// abandoned checkout self-heal without a cleanup job: if a buyer never
+// finishes paying, `reserved_until` passes and the listing becomes
+// reservable again on the next attempt.
+// Must be called inside the same transaction that creates the pending
+// orders, using that transaction's client.
+async function reserveForCheckout(client, ids) {
+  if (ids.length === 0) return [];
+  const { rows } = await client.query(
+    `UPDATE listings
+     SET status = 'pending_sale', reserved_until = now() + interval '20 minutes'
+     WHERE id = ANY($1::uuid[])
+       AND (status = 'active' OR (status = 'pending_sale' AND reserved_until < now()))
+     RETURNING *`,
+    [ids]
+  );
+  return rows;
+}
+
+// Undoes reserveForCheckout — used when a reservation doesn't turn
+// into a sale (Chapa init failed, or the payment itself failed/never
+// completed). Only releases listings that are still 'pending_sale' so
+// it can't accidentally un-sell something that paid in the meantime.
+// `client` is optional: pass a transaction client to run inside one,
+// or omit it to run standalone against the pool.
+async function releaseReservation(ids, client) {
+  if (ids.length === 0) return;
+  const exec = client ? client.query.bind(client) : query;
+  await exec(
+    `UPDATE listings SET status = 'active', reserved_until = NULL
+     WHERE id = ANY($1::uuid[]) AND status = 'pending_sale'`,
+    [ids]
+  );
+}
+
+module.exports = {
+  create,
+  findById,
+  findManyByIds,
+  reserveForCheckout,
+  releaseReservation,
+  search,
+  update,
+  softRemove,
+  findByUser,
+  getSellerPhone,
+};

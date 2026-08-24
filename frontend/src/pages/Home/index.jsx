@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { listingsApi, categoriesApi } from '../../api/listings.api.js';
 import ListingGrid from '../../components/listings/ListingGrid.jsx';
 import { useLanguage } from '../../hooks/useLanguage.js';
-import { CATEGORY_VISUALS } from '../../utils/categoryIcons.jsx';
+import { CATEGORY_VISUALS, getCategoryDisplayName } from '../../utils/categoryIcons.jsx';
 import { CITIES } from '../../utils/constants.js';
 import { getHeroTheme } from '../../utils/heroThemes.js';
 
@@ -373,7 +373,7 @@ export default function Home() {
                     : 'bg-white text-ink/70 border-line hover:border-ink/40'
                 }`}
               >
-                {sub.name}
+                {getCategoryDisplayName(sub, t)}
               </button>
             ))}
           </div>

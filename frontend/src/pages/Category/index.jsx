@@ -109,7 +109,7 @@ export default function CategoryPage() {
                   : 'bg-white border border-line text-ink/70 hover:border-mustard/50'
               }`}
             >
-              {sub.name}
+              {getCategoryDisplayName(sub, t)}
             </button>
           ))}
         </div>

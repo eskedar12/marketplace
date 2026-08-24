@@ -134,14 +134,17 @@ export const CATEGORY_VISUALS = [
 ];
 
 // Translates a category name coming from the backend (always in
-// English) using the same i18nKey mapping the navbar/footer use.
-// Falls back to the raw name for subcategories or any category that
-// isn't one of the top-level CATEGORY_VISUALS entries, since those
-// don't have a translation key yet.
+// English) using the same i18nKey mapping the navbar/footer use for
+// the 9 top-level categories, or the `subcategories` dictionary (keyed
+// by slug) for everything one level down. Falls back to the raw name
+// if a slug isn't in either dictionary yet.
 export function getCategoryDisplayName(category, t) {
   if (!category) return '';
   const visual = CATEGORY_VISUALS.find((v) => v.dbSlug === category.slug);
-  return visual ? t(`navbar.${visual.i18nKey}`) : category.name;
+  if (visual) return t(`navbar.${visual.i18nKey}`);
+  const key = `subcategories.${category.slug}`;
+  const subLabel = t(key);
+  return subLabel === key ? category.name : subLabel;
 }
 
 // Given the real categories from GET /api/categories, find the best
