@@ -171,6 +171,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return undefined;
@@ -215,6 +216,12 @@ export default function Navbar() {
     document.addEventListener('mousedown', handleOutside);
     return () => document.removeEventListener('mousedown', handleOutside);
   }, []);
+
+  // Close the mobile menu whenever the route changes (tapping a link
+  // inside it navigates away, so nothing else needs to close it manually).
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <header className="bg-white sticky top-0 z-30 shadow-sm">
@@ -347,7 +354,7 @@ export default function Navbar() {
                   logout();
                   navigate('/');
                 }}
-                className="hidden sm:inline text-sm font-display font-semibold text-ink/60 hover:text-clay transition-colors"
+                className="hidden md:inline text-sm font-display font-semibold text-ink/60 hover:text-clay transition-colors"
               >
                 {t('navbar.logout')}
               </button>
@@ -357,7 +364,7 @@ export default function Navbar() {
               <Link to="/login" className="text-sm font-display font-semibold text-ink/80 hover:text-mustard transition-colors">
                 {t('navbar.login')}
               </Link>
-              <Link to="/register" className="hidden sm:inline text-sm font-display font-semibold text-ink/80 hover:text-mustard transition-colors">
+              <Link to="/register" className="hidden md:inline text-sm font-display font-semibold text-ink/80 hover:text-mustard transition-colors">
                 {t('navbar.register')}
               </Link>
             </>
@@ -379,8 +386,76 @@ export default function Navbar() {
 
           <ThemeToggle />
           <LanguageSwitcher />
+
+          {/* Mobile menu toggle — only place Categories, quick links,
+              Register (logged out) and Log out (logged in) are reachable
+              below the md breakpoint, since the center <nav> and a few
+              right-side controls are hidden there. */}
+          <button
+            onClick={() => setMobileMenuOpen((o) => !o)}
+            aria-label={mobileMenuOpen ? t('navbar.closeMenu') : t('navbar.openMenu')}
+            aria-expanded={mobileMenuOpen}
+            className="md:hidden p-2 text-ink/70 hover:text-mustard hover:bg-mustard/5 rounded-lg transition-colors"
+          >
+            {mobileMenuOpen ? (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
+
+      {/* Mobile menu panel — Categories + quick links (always hidden above
+          md via the button itself being md:hidden) plus whichever of
+          Register / Log out the right-side controls hide on small screens. */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-line bg-white px-6 py-4 space-y-4">
+          <div>
+            <p className="text-xs font-display font-bold uppercase tracking-wide text-ink/40 mb-2">
+              {t('navbar.categories')}
+            </p>
+            <div className="grid grid-cols-2 gap-1">
+              {CATEGORY_VISUALS.map((cat) => (
+                <Link
+                  key={cat.name}
+                  to={`/?category=${cat.dbSlug}`}
+                  className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-paper transition-colors"
+                >
+                  <span className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${cat.bg} ${cat.fg}`}>
+                    {cat.icon('w-4 h-4')}
+                  </span>
+                  <span className="text-sm font-body font-medium text-ink">{t(`navbar.${cat.i18nKey}`)}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {user ? (
+            <div className="pt-3 border-t border-line">
+              <button
+                onClick={() => {
+                  logout();
+                  navigate('/');
+                }}
+                className="text-sm font-display font-semibold text-clay"
+              >
+                {t('navbar.logout')}
+              </button>
+            </div>
+          ) : (
+            <div className="pt-3 border-t border-line">
+              <Link to="/register" className="text-sm font-display font-semibold text-ink/80 hover:text-mustard transition-colors">
+                {t('navbar.register')}
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
     </header>
   );
 }
