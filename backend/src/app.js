@@ -25,7 +25,25 @@ const app = express();
 
 // ---- Security & core middleware ----
 app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors({ origin: process.env.FRONTEND_URL }));
+
+// Allow the configured FRONTEND_URL plus common local dev ports, so a
+// missing/mismatched FRONTEND_URL in .env can't silently break CORS.
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Non-browser tools (curl, Postman) send no Origin header — allow those too.
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
+}));
+
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(apiLimiter);
