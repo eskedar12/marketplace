@@ -64,4 +64,18 @@ module.exports = {
   // something like support@yourdomain.com once you've verified a domain
   // at https://resend.com/domains.
   supportFromEmail: process.env.SUPPORT_FROM_EMAIL || 'onboarding@resend.dev',
+  // Fayda (Ethiopian national digital ID) verification. Real Fayda
+  // eSignet access (id.gov.et/api) takes days to be granted, so this
+  // defaults to a MOCK flow: src/modules/fayda serves its own fake
+  // "login" page instead of redirecting to Fayda, so the whole
+  // connect -> approve -> callback -> verified loop can be built and
+  // tested today. Set FAYDA_MOCK_MODE=false and fill in the FAYDA_*
+  // values below once real credentials arrive — nothing else in the
+  // app needs to change, only src/modules/fayda/fayda.service.js.
+  faydaMockMode: process.env.FAYDA_MOCK_MODE !== 'false',
+  faydaClientId: process.env.FAYDA_CLIENT_ID,
+  faydaAuthorizeUrl: process.env.FAYDA_AUTHORIZE_URL,
+  faydaTokenUrl: process.env.FAYDA_TOKEN_URL,
+  faydaUserinfoUrl: process.env.FAYDA_USERINFO_URL,
+  faydaJwksUrl: process.env.FAYDA_JWKS_URL,
 };

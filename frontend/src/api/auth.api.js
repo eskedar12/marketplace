@@ -21,6 +21,13 @@ export const usersApi = {
   },
 };
 
+// Returns { authorizeUrl } — the caller must do a full-page navigation
+// (window.location.href = authorizeUrl), not just use the response.
+// This has to leave the SPA the same way a real Fayda login would.
+export const faydaApi = {
+  connect: () => axiosClient.get('/fayda/connect'),
+};
+
 export const ratingsApi = {
   getForUser: (userId) => axiosClient.get(`/ratings/user/${userId}`),
   create: (payload) => axiosClient.post('/ratings', payload),

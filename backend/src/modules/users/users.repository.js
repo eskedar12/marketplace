@@ -28,6 +28,13 @@ async function findById(id) {
   return rows[0] || null;
 }
 
+// Used when linking a Fayda identity, to enforce that one Fayda
+// account can't be linked to two different marketplace users.
+async function findByFaydaSub(faydaSub) {
+  const { rows } = await query('SELECT id FROM users WHERE fayda_sub = $1', [faydaSub]);
+  return rows[0] || null;
+}
+
 async function createUser({ name, email, password_hash, phone, city, neighborhood, role }) {
   const { rows } = await query(
     `INSERT INTO users (name, email, password_hash, phone, city, neighborhood, role)
@@ -54,4 +61,4 @@ async function updateUser(id, fields) {
   return findById(id);
 }
 
-module.exports = { findByEmail, findById, createUser, updateUser };
+module.exports = { findByEmail, findById, findByFaydaSub, createUser, updateUser };

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { usersApi } from '../../api/auth.api.js';
+import { useSearchParams } from 'react-router-dom';
+import { usersApi, faydaApi } from '../../api/auth.api.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { Input, Select } from '../../components/common/Input.jsx';
 import Button from '../../components/common/Button.jsx';
@@ -17,6 +18,12 @@ export default function Profile() {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [connectingFayda, setConnectingFayda] = useState(false);
+  // 'success' | 'error' | 'cancelled' — read from the URL once below,
+  // then kept here so the banner survives after ?fayda= is stripped
+  // from the URL (otherwise it'd vanish the instant we clean the URL up).
+  const [faydaBanner, setFaydaBanner] = useState(null);
 
   useEffect(() => {
     usersApi
@@ -27,6 +34,40 @@ export default function Profile() {
       })
       .catch((err) => setError(err.message));
   }, []);
+
+  // Landed back from a Fayda attempt (mock or real) — refetch so the
+  // verified badge shows up immediately, then drop ?fayda= from the URL
+  // so refreshing the page doesn't re-show the banner.
+  useEffect(() => {
+    const status = searchParams.get('fayda');
+    if (!status) return;
+    setFaydaBanner(status);
+    if (status === 'success') {
+      usersApi
+        .getMe()
+        .then((res) => {
+          setProfile(res.data);
+          setForm(res.data);
+        })
+        .catch((err) => setError(err.message));
+    }
+    const next = new URLSearchParams(searchParams);
+    next.delete('fayda');
+    setSearchParams(next, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function handleVerifyWithFayda() {
+    setConnectingFayda(true);
+    setError('');
+    try {
+      const res = await faydaApi.connect();
+      window.location.href = res.data.authorizeUrl; // full navigation — must leave the SPA
+    } catch (err) {
+      setError(err.message);
+      setConnectingFayda(false);
+    }
+  }
 
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -81,10 +122,33 @@ export default function Profile() {
     <div className="max-w-md mx-auto px-4 sm:px-6 py-8">
       <h1 className="text-2xl font-700 mb-1">{t('profile.yourProfile')}</h1>
       {profile.role === 'seller' && (
-        <p className="text-ink/60 text-sm font-body mb-6">
+        <p className="text-ink/60 text-sm font-body mb-2">
           {t('profile.rating', { avg: Number(profile.rating_avg || 0).toFixed(1), count: profile.rating_count || 0 })}
           {profile.is_verified && <span className="ml-2 text-juniper font-600">{t('profile.verified')}</span>}
         </p>
+      )}
+
+      {profile.role === 'seller' && !profile.is_verified && (
+        <div className="mb-6">
+          <button
+            type="button"
+            onClick={handleVerifyWithFayda}
+            disabled={connectingFayda}
+            className="text-sm font-display font-bold text-juniper hover:text-mustard disabled:opacity-60"
+          >
+            {connectingFayda ? t('profile.faydaConnecting') : t('profile.verifyWithFayda')}
+          </button>
+        </div>
+      )}
+
+      {faydaBanner === 'success' && (
+        <p className="text-juniper text-sm font-body mb-6 -mt-4">{t('profile.faydaSuccess')}</p>
+      )}
+      {faydaBanner === 'error' && (
+        <p className="text-clay text-sm font-body mb-6 -mt-4">{t('profile.faydaError')}</p>
+      )}
+      {faydaBanner === 'cancelled' && (
+        <p className="text-ink/50 text-sm font-body mb-6 -mt-4">{t('profile.faydaCancelled')}</p>
       )}
 
       <div className="flex items-center gap-4 mb-6">
