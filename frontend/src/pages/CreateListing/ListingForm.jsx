@@ -196,7 +196,7 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
           label={t('createListing.price')}
           type="number"
           required
-          min="0"
+          min="0.01"
           step="0.01"
           className="font-mono"
           value={form.price}

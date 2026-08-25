@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { listingsApi, categoriesApi } from '../../api/listings.api.js';
 import ListingGrid from '../../components/listings/ListingGrid.jsx';
 import { useLanguage } from '../../hooks/useLanguage.js';
@@ -74,9 +74,19 @@ const WHY_REGEBEYA = [
 
 export default function Home() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useLanguage();
   const [query, setQuery] = useState('');
   const [city, setCity] = useState('');
+  const [redirectMessage, setRedirectMessage] = useState(location.state?.message || null);
+
+  // Clear the message from history state so it doesn't reappear on
+  // back/forward navigation or a refresh.
+  useEffect(() => {
+    if (location.state?.message) {
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, []);
 
   const [recent, setRecent] = useState([]);
   const [recentLoading, setRecentLoading] = useState(true);
@@ -212,6 +222,18 @@ export default function Home() {
 
   return (
     <div className="w-full">
+      {redirectMessage && (
+        <div className="bg-mustard/10 border-b border-mustard/30 text-ink text-sm font-body px-4 py-3 flex items-center justify-center gap-3">
+          <span>{redirectMessage}</span>
+          <button
+            onClick={() => setRedirectMessage(null)}
+            className="text-ink/50 hover:text-ink font-bold"
+            aria-label="Dismiss"
+          >
+            ×
+          </button>
+        </div>
+      )}
       {/* 1. Hero — background, tint, and headline swap per category */}
       <section className="relative overflow-hidden min-h-[520px] md:min-h-[640px]">
         <div

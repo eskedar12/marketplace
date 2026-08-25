@@ -48,7 +48,7 @@ const mockLoginSubmit = asyncHandler(async (req, res) => {
     return res.redirect(`${env.frontendUrl}/profile?fayda=error`);
   }
 
-  res.redirect(`${env.frontendUrl}/profile?fayda=success`);
+  res.send(mockSuccessHtml());
 });
 
 function mockLoginHtml(state) {
@@ -61,25 +61,27 @@ function mockLoginHtml(state) {
 <style>
   body { font-family: -apple-system, sans-serif; background: #f2f2f0; margin: 0; padding: 40px 16px; display: flex; justify-content: center; }
   .card { background: #fff; border-radius: 12px; padding: 32px; max-width: 380px; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
-  .banner { background: #fef3cd; border: 1px solid #f0d878; color: #6b5a12; font-size: 13px; padding: 10px 12px; border-radius: 8px; margin-bottom: 20px; }
   h1 { font-size: 18px; margin: 0 0 4px; }
   p.sub { color: #666; font-size: 13px; margin: 0 0 24px; }
-  .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+  label { display: block; font-size: 12px; color: #666; margin: 14px 0 4px; }
+  input[type="text"] { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
   button { width: 100%; padding: 12px; border-radius: 8px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 12px; }
   .approve { background: #2f7d4f; color: #fff; }
+  .approve:disabled { background: #a9c9b6; cursor: not-allowed; }
   .cancel { background: transparent; color: #999; }
 </style>
 </head>
 <body>
   <div class="card">
-    <div class="banner">⚠️ This is a MOCK screen for local development — it is not affiliated with the Ethiopian government or the real Fayda eSignet service.</div>
     <h1>Fayda eSignet</h1>
-    <p class="sub">Sign in to verify your identity with VinTech Marketplace</p>
-    <div class="row"><span>Full name</span><span>Test User</span></div>
-    <div class="row"><span>Fayda ID</span><span>•••• •••• 1234</span></div>
-    <form method="POST" action="/api/v1/fayda/mock/login">
+    <p class="sub">Sign in to verify your identity with RegebeyaMarketplace</p>
+    <form id="approveForm" method="POST" action="/api/v1/fayda/mock/login">
       <input type="hidden" name="state" value="${escapeHtml(state)}" />
       <input type="hidden" name="action" value="approve" />
+      <label for="fullName">Full name</label>
+      <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" autocomplete="off" required />
+      <label for="fanNumber">FAN number</label>
+      <input type="text" id="fanNumber" name="fanNumber" placeholder="Enter your FAN number" autocomplete="off" pattern="[0-9]*" inputmode="numeric" required />
       <button type="submit" class="approve">Approve &amp; Continue</button>
     </form>
     <form method="POST" action="/api/v1/fayda/mock/login">
@@ -99,6 +101,33 @@ function mockErrorHtml(message) {
 <body style="font-family: -apple-system, sans-serif; padding: 40px; text-align: center;">
   <p>${escapeHtml(message)}</p>
   <p><a href="${env.frontendUrl}/profile">Return to profile</a></p>
+</body>
+</html>`;
+}
+
+function mockSuccessHtml() {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Fayda Verification Complete</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  body { font-family: -apple-system, sans-serif; background: #f2f2f0; margin: 0; padding: 40px 16px; display: flex; justify-content: center; }
+  .card { background: #fff; border-radius: 12px; padding: 32px; max-width: 380px; width: 100%; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+  .check { color: #2f7d4f; font-size: 42px; font-weight: 700; margin-bottom: 12px; }
+  h1 { font-size: 22px; margin: 0 0 8px; }
+  p { color: #666; font-size: 15px; margin: 0 0 24px; }
+  a { display: block; background: #2f7d4f; color: #fff; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 600; text-decoration: none; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="check">&#10003;</div>
+    <h1>Identity verified</h1>
+    <p>Your identity has been successfully verified with Fayda.</p>
+    <a href="${escapeHtml(env.frontendUrl)}/profile?fayda=success">Return to your profile</a>
+  </div>
 </body>
 </html>`;
 }

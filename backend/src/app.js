@@ -24,8 +24,8 @@ const faydaRoutes = require('./modules/fayda/fayda.routes');
 const app = express();
 
 // ---- Security & core middleware ----
-app.use(helmet());
-app.use(cors()); // tighten to your frontend's origin before deploying
+app.use(helmet({ contentSecurityPolicy: false }));
+app.use(cors({ origin: process.env.FRONTEND_URL }));
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(apiLimiter);

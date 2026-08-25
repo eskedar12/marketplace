@@ -48,6 +48,7 @@ export default function Profile() {
         .then((res) => {
           setProfile(res.data);
           setForm(res.data);
+          updateStoredUser(res.data);
         })
         .catch((err) => setError(err.message));
     }
@@ -142,13 +143,20 @@ export default function Profile() {
       )}
 
       {faydaBanner === 'success' && (
-        <p className="text-juniper text-sm font-body mb-6 -mt-4">{t('profile.faydaSuccess')}</p>
+        <div className="mb-6 rounded-lg border border-juniper/30 bg-juniper/10 px-4 py-3 flex items-center gap-2">
+          <span className="text-juniper text-lg leading-none">✓</span>
+          <p className="text-juniper text-sm font-body font-600">{t('profile.faydaSuccess')}</p>
+        </div>
       )}
       {faydaBanner === 'error' && (
-        <p className="text-clay text-sm font-body mb-6 -mt-4">{t('profile.faydaError')}</p>
+        <div className="mb-6 rounded-lg border border-clay/30 bg-clay/10 px-4 py-3">
+          <p className="text-clay text-sm font-body">{t('profile.faydaError')}</p>
+        </div>
       )}
       {faydaBanner === 'cancelled' && (
-        <p className="text-ink/50 text-sm font-body mb-6 -mt-4">{t('profile.faydaCancelled')}</p>
+        <div className="mb-6 rounded-lg border border-line bg-ink/5 px-4 py-3">
+          <p className="text-ink/50 text-sm font-body">{t('profile.faydaCancelled')}</p>
+        </div>
       )}
 
       <div className="flex items-center gap-4 mb-6">
@@ -181,7 +189,14 @@ export default function Profile() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input label={t('profile.fullName')} required value={form.name} onChange={(e) => update('name', e.target.value)} />
         <Input label={t('profile.email')} value={form.email} disabled className="opacity-60" />
-        <Input label={t('profile.phone')} required value={form.phone} onChange={(e) => update('phone', e.target.value)} />
+        <Input
+          label={t('profile.phone')}
+          required
+          type="tel"
+          inputMode="tel"
+          value={form.phone}
+          onChange={(e) => update('phone', e.target.value.replace(/[^0-9+\s-]/g, ''))}
+        />
         <Select
           label={t('profile.city')}
           required

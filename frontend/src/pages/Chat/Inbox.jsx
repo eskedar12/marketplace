@@ -40,7 +40,16 @@ export default function Inbox() {
               className="flex items-center justify-between py-4 px-2 hover:bg-white transition-colors gap-4"
             >
               <div className="min-w-0">
-                <p className="font-display font-600 text-sm truncate">{c.other_user_name}</p>
+                <p className="font-display font-600 text-sm flex items-center gap-1.5 truncate">
+                  {c.other_user_name}
+                  {c.other_user_verified && (
+                    <span className="inline-flex items-center text-blue-500" title="Verified User">
+                      <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                        <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293l-4 4a1 1 0 01-1.414 0l-2-2a1 1 0 111.414-1.414L9 10.586l3.293-3.293a1 1 0 111.414 1.414z" />
+                      </svg>
+                    </span>
+                  )}
+                </p>
                 <p className="text-xs text-ink/50 font-body mt-0.5 truncate">{c.listing_title}</p>
                 <p className="text-xs text-ink/50 font-body mt-0.5 truncate">
                   {c.last_message || t('chat.noMessagesYet')}

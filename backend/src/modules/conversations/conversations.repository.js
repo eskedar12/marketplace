@@ -21,7 +21,8 @@ async function findById(id) {
   // thread view can show "who" + "about what" without extra round trips.
   const { rows } = await query(
     `SELECT c.*, l.title AS listing_title,
-       b.name AS buyer_name, s.name AS seller_name
+       b.name AS buyer_name, s.name AS seller_name,
+       b.is_verified AS buyer_verified, s.is_verified AS seller_verified
      FROM conversations c
      JOIN listings l ON l.id = c.listing_id
      JOIN users b ON b.id = c.buyer_id
@@ -40,6 +41,7 @@ async function listForUser(userId) {
     `SELECT c.*, l.title AS listing_title,
        CASE WHEN c.buyer_id = $1 THEN s.name ELSE b.name END AS other_user_name,
        CASE WHEN c.buyer_id = $1 THEN c.seller_id ELSE c.buyer_id END AS other_user_id,
+       CASE WHEN c.buyer_id = $1 THEN s.is_verified ELSE b.is_verified END AS other_user_verified,
        (SELECT content FROM messages m WHERE m.conversation_id = c.id ORDER BY m.sent_at DESC LIMIT 1) AS last_message,
        (SELECT sent_at FROM messages m WHERE m.conversation_id = c.id ORDER BY m.sent_at DESC LIMIT 1) AS last_message_at
      FROM conversations c

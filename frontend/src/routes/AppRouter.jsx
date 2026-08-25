@@ -61,7 +61,7 @@ export default function AppRouter() {
       <Route
         path="/sell"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute role="seller">
             <CreateListing />
           </ProtectedRoute>
         }
@@ -69,7 +69,7 @@ export default function AppRouter() {
       <Route
         path="/listings/:id/edit"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute role="seller">
             <EditListing />
           </ProtectedRoute>
         }
@@ -77,7 +77,7 @@ export default function AppRouter() {
       <Route
         path="/my-listings"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute role="seller">
             <MyListings />
           </ProtectedRoute>
         }

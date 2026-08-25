@@ -80,6 +80,11 @@ export default function Thread() {
       ? conversation.seller_name
       : conversation.buyer_name
     : '';
+  const isOtherUserVerified = conversation
+    ? user?.id === conversation.buyer_id
+      ? conversation.seller_verified
+      : conversation.buyer_verified
+    : false;
   // Only the buyer side of a conversation can rate — the seller is who's
   // being reviewed here.
   const isBuyer = conversation && user?.id === conversation.buyer_id;
@@ -130,7 +135,16 @@ export default function Thread() {
         <div className="pb-3 mb-1 border-b border-line">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="font-display font-700 text-base text-ink">{otherUserName}</p>
+              <p className="font-display font-700 text-base text-ink flex items-center gap-1.5">
+                {otherUserName}
+                {isOtherUserVerified && (
+                  <span className="inline-flex items-center text-blue-500" title="Verified User">
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                      <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293l-4 4a1 1 0 01-1.414 0l-2-2a1 1 0 111.414-1.414L9 10.586l3.293-3.293a1 1 0 111.414 1.414z" />
+                    </svg>
+                  </span>
+                )}
+              </p>
               <Link
                 to={`/listings/${conversation.listing_id}`}
                 className="text-xs font-body text-ink/50 hover:text-mustard truncate block"
