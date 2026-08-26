@@ -35,17 +35,25 @@ app.use(helmet({ contentSecurityPolicy: false }));
 // <form> POSTs back to /api/v1/fayda/mock/login, the browser sends an
 // Origin header equal to the backend's own URL, not the frontend's. Without
 // this, the backend rejects its own form submission as a CORS violation.
+//
+// normalizeOrigin trims whitespace and any trailing slash before comparing.
+// Origin headers sent by browsers never have a trailing slash or stray
+// whitespace, but env vars pasted into a dashboard sometimes do (an extra
+// "/" at the end, a copied trailing newline) — without this, a value that
+// looks identical to the eye can still fail a strict string comparison.
+const normalizeOrigin = (url) => (url || '').trim().replace(/\/+$/, '');
+
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   process.env.API_BASE_URL,
   'http://localhost:5173',
   'http://127.0.0.1:5173',
-].filter(Boolean);
+].filter(Boolean).map(normalizeOrigin);
 
 app.use(cors({
   origin: (origin, callback) => {
     // Non-browser tools (curl, Postman) send no Origin header — allow those too.
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(normalizeOrigin(origin))) {
       return callback(null, true);
     }
     return callback(new Error('Not allowed by CORS'));
