@@ -28,8 +28,16 @@ app.use(helmet({ contentSecurityPolicy: false }));
 
 // Allow the configured FRONTEND_URL plus common local dev ports, so a
 // missing/mismatched FRONTEND_URL in .env can't silently break CORS.
+//
+// API_BASE_URL is also included here (not just FRONTEND_URL) because the
+// Fayda mock login page is server-rendered HTML served BY this backend
+// itself (see src/modules/fayda/fayda.controller.js) — when that page's
+// <form> POSTs back to /api/v1/fayda/mock/login, the browser sends an
+// Origin header equal to the backend's own URL, not the frontend's. Without
+// this, the backend rejects its own form submission as a CORS violation.
 const allowedOrigins = [
   process.env.FRONTEND_URL,
+  process.env.API_BASE_URL,
   'http://localhost:5173',
   'http://127.0.0.1:5173',
 ].filter(Boolean);
