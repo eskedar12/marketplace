@@ -2,8 +2,23 @@ const ApiError = require('../../utils/ApiError');
 const listingsRepository = require('./listings.repository');
 const cartRepository = require('../cart/cart.repository');
 const notificationsService = require('../notifications/notifications.service');
+const categoriesService = require('../categories/categories.service');
+
+// Joi only checks that category_id is *a* valid UUID (see
+// listings.validation.js) — it can't know which categories are
+// parents vs. leaves. Enforcing "leaf only" here means a listing can
+// never end up tagged with a parent category (e.g. "Vehicles")
+// instead of a subcategory (e.g. "Cars"), which is what silently broke
+// the subcategory filter pills before this check existed.
+async function assertLeafCategory(categoryId) {
+  const isLeaf = await categoriesService.isLeafCategory(categoryId);
+  if (!isLeaf) {
+    throw ApiError.badRequest('Please choose a specific subcategory, not a top-level category.');
+  }
+}
 
 async function createListing(sellerId, data) {
+  await assertLeafCategory(data.category_id);
   return listingsRepository.create(sellerId, data);
 }
 
@@ -29,6 +44,9 @@ async function updateListing(id, userId, updates) {
   if (!listing) throw ApiError.notFound('Listing not found');
   if (listing.seller_id !== userId) {
     throw ApiError.forbidden('You can only edit your own listings');
+  }
+  if (updates.category_id !== undefined) {
+    await assertLeafCategory(updates.category_id);
   }
 
   const isPriceDrop = updates.price !== undefined && Number(updates.price) < Number(listing.price);

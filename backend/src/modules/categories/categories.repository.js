@@ -12,4 +12,9 @@ async function findBySlug(slug) {
   return rows[0] || null;
 }
 
-module.exports = { findAll, findBySlug };
+async function findById(id) {
+  const { rows } = await query('SELECT * FROM categories WHERE id = $1', [id]);
+  return rows[0] || null;
+}
+
+module.exports = { findAll, findBySlug, findById };

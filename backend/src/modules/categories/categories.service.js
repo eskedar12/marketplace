@@ -27,4 +27,18 @@ async function getCategoryBySlugWithSubtree(slug) {
   return { ...match, subcategories, parent, categoryIds };
 }
 
-module.exports = { getCategoryTree, getCategoryBySlugWithSubtree };
+// Listings must be tagged with a leaf (sub)category — never a parent —
+// so they actually show up when a buyer filters by a specific
+// subcategory pill (e.g. "Cars"), instead of only surfacing under
+// "All". A category is a leaf if some other row points at it as a
+// parent_id; anything with no children is a leaf, including a
+// top-level category that was never given subcategories.
+async function isLeafCategory(categoryId) {
+  const category = await categoriesRepository.findById(categoryId);
+  if (!category) return false;
+  const all = await categoriesRepository.findAll();
+  const hasChildren = all.some((c) => c.parent_id === categoryId);
+  return !hasChildren;
+}
+
+module.exports = { getCategoryTree, getCategoryBySlugWithSubtree, isLeafCategory };

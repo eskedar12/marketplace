@@ -23,6 +23,28 @@ function categoryLabel(apiCat, t) {
   return visual ? t(`navbar.${visual.i18nKey}`) : apiCat.name;
 }
 
+// Sellers must pick a leaf (sub)category — never a parent — so every
+// listing ends up filterable by the pills on the category page (see
+// CategoryPage/FilterBar). `categoriesApi.getAll()` returns the tree
+// (parents with a nested `subcategories` array); flatten that into
+// one option per subcategory, grouped under its parent's label so the
+// <select> still reads as a two-level picker. A parent with no
+// subcategories yet (shouldn't happen post-migration-008, but just in
+// case) falls back to offering the parent itself so the form never
+// dead-ends with zero options.
+function buildCategoryOptions(categories, t) {
+  return categories.flatMap((parent) => {
+    if (!parent.subcategories || parent.subcategories.length === 0) {
+      return [{ value: parent.id, label: categoryLabel(parent, t) }];
+    }
+    return parent.subcategories.map((sub) => ({
+      value: sub.id,
+      label: categoryLabel(sub, t),
+      group: categoryLabel(parent, t),
+    }));
+  });
+}
+
 const MIN_PHOTOS = 1;
 const MAX_PHOTOS = 5;
 
@@ -217,7 +239,7 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
         placeholder={t('common.select')}
         value={form.category_id}
         onChange={(e) => update('category_id', e.target.value)}
-        options={categories.map((c) => ({ value: c.id, label: categoryLabel(c, t) }))}
+        options={buildCategoryOptions(categories, t)}
       />
       <div className="grid grid-cols-2 gap-4">
         <Select
@@ -235,15 +257,4 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
         />
       </div>
 
-      {error && <p className="text-clay text-sm font-body">{error}</p>}
-
-      <Button type="submit" disabled={submitting}>
-        {submitting
-          ? uploadingCount > 0
-            ? t('createListing.uploadingPhotos', { count: uploadingCount, plural: uploadingCount > 1 ? 's' : '' })
-            : t('common.saving')
-          : submitLabel}
-      </Button>
-    </form>
-  );
-}
+      {error && <p className="text-clay text-sm
