@@ -53,7 +53,15 @@ const allowedOrigins = [
 app.use(cors({
   origin: (origin, callback) => {
     // Non-browser tools (curl, Postman) send no Origin header — allow those too.
-    if (!origin || allowedOrigins.includes(normalizeOrigin(origin))) {
+    const normalized = normalizeOrigin(origin);
+    // TEMPORARY DEBUG LOGGING — remove once the Fayda CORS issue is
+    // confirmed fixed. Prints the exact incoming Origin header alongside
+    // the exact allowlist on every request, so a mismatch (typo, missing
+    // env var, unexpected value) shows up directly in the Render logs
+    // instead of being guessed at.
+    console.log('[CORS DEBUG] incoming origin:', JSON.stringify(origin), '-> normalized:', JSON.stringify(normalized));
+    console.log('[CORS DEBUG] allowedOrigins:', JSON.stringify(allowedOrigins));
+    if (!origin || allowedOrigins.includes(normalized)) {
       return callback(null, true);
     }
     return callback(new Error('Not allowed by CORS'));
