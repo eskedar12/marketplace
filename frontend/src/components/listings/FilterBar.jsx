@@ -35,10 +35,15 @@ export default function FilterBar({ filters, onChange }) {
   }, []);
 
   // GET /api/categories returns a 2-level tree (each parent carries a
-  // `subcategories` array), but the filter should only offer the 9
-  // top-level categories — subcategories are left out entirely.
+  // `subcategories` array). The dropdown only *shows* the 9 top-level
+  // category names, but each option's value is the parent id PLUS every
+  // one of its subcategory ids, comma-joined — mirroring what
+  // Category/index.jsx does for its own category_id filter. Without this,
+  // picking "Vehicles" here would only match listings whose category_id
+  // is literally the Vehicles row itself, never listings tagged to a
+  // subcategory like "Cars" or "Motorcycles" underneath it.
   const categoryOptions = categoryTree.map((parent) => ({
-    value: parent.id,
+    value: [parent.id, ...(parent.subcategories || []).map((s) => s.id)].join(','),
     label: categoryLabel(parent, t),
   }));
 
