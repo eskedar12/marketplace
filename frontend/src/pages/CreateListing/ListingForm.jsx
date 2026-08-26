@@ -257,4 +257,15 @@ export default function ListingForm({ initial, onSubmit, submitLabel }) {
         />
       </div>
 
-      {error && <p className="text-clay text-sm
+      {error && <p className="text-clay text-sm font-body">{error}</p>}
+
+      <Button type="submit" disabled={submitting}>
+        {submitting
+          ? uploadingCount > 0
+            ? t('createListing.uploadingPhotos', { count: uploadingCount, plural: uploadingCount > 1 ? 's' : '' })
+            : t('common.saving')
+          : submitLabel}
+      </Button>
+    </form>
+  );
+}
