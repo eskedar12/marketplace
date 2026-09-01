@@ -6,6 +6,8 @@ Ethiopian communities. Built to replace fragmented, hard-to-search
 Telegram-channel listings with a proper searchable, filterable web
 platform.
 
+**🔗 [Live Demo — ReGebeya](https://regebeya.onrender.com/)**
+
 This repo is a monorepo with two apps:
 
 ```
@@ -17,14 +19,14 @@ Marketplace/
 ## Highlights
 
 - Seller flow: onboarding/login, multi-photo listing upload, condition
-  tagging, city/neighborhood location, optional Fayda (Ethiopian
-  national ID) verification
+tagging, city/neighborhood location, optional Fayda (Ethiopian
+national ID) verification
 - Buyer flow: keyword search, price/condition/location filters,
-  category browsing, favorites, cart, Chapa checkout
+category browsing, favorites, cart, Chapa checkout
 - Direct contact: in-app messaging + a phone "Call seller" button
 - Trust & safety: listing reports, post-transaction seller ratings
 - Extras: in-app notifications, a Gemini-backed page assistant,
-  bilingual UI, light/dark theming
+bilingual UI, light/dark theming
 
 ## Quick start
 
@@ -47,7 +49,7 @@ npm run dev
 Full setup details — database migrations, all environment variables,
 API routes, and known gaps — live in each app's own README:
 
-- [`backend/README.md`](./backend/README.md)
+- [`backend/README.md`]\(./backend/README.md\)
 - [`frontend/README.md`](./frontend/README.md)
 
 ## Tech stack
