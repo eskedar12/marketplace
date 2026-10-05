@@ -32,7 +32,6 @@ bilingual UI, light/dark theming
 
 Run both apps locally, each in its own terminal:
 
-```bash
 # Terminal 1 — backend (http://localhost:5000)
 cd backend
 npm install
