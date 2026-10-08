@@ -45,7 +45,7 @@ cp .env.example .env   # set VITE_API_URL to the backend's URL
 npm run dev
 ```
 
-Full setup details — database migrations, all environment variables,
+
 API routes, and known gaps — live in each app's own README:
 
 - [`backend/README.md`]\(./backend/README.md\)
