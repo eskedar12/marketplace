@@ -60,4 +60,4 @@ API routes, and known gaps — live in each app's own README:
 | Auth           | JWT + bcrypt |
 | Image storage    | Cloudinary |
 | Payments           | Chapa |
-| Identity verification | Fayda (Ethiopian national digital ID), mock mode by default |
+| Identity verification | Fayda (Ethiopian national digital ID), mock mode by default
