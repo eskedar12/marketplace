@@ -6,9 +6,7 @@ Ethiopian communities. Built to replace fragmented, hard-to-search
 Telegram-channel listings with a proper searchable, filterable web
 platform.
 
-**🔗 [Live Demo — ReGebeya](https://regebeya.onrender.com/)**
-
-This repo is a monorepo with two apps:
+**🔗 [Live Demo — ReGebeya](https://regebeya.onrender.com/)
 
 ```
 Marketplace/
